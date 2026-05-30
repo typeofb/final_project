@@ -740,6 +740,24 @@ public class ApprovalService {
 			
 			Approval saved = approvalRepository.save(newEntity);
 			
+			// Reset approvers and agreementers to Waiting ("W") status
+			List<ApprApprover> approverListForReset = apprApproverRepository.findAllByApproval_ApprNo(entity.getApprNo());
+			for (ApprApprover approver : approverListForReset) {
+				ApprApproverDto approverDto = new ApprApproverDto().toDto(approver);
+				approverDto.setApprover_decision_status("W");
+				approverDto.setDecision_reason(null);
+				approverDto.setApprover_decision_status_time(null);
+				apprApproverRepository.save(approverDto.toEntity());
+			}
+
+			for (ApprAgreementer agreementer : agreementers) {
+				ApprAgreementerDto agreementerDto = new ApprAgreementerDto().toDto(agreementer);
+				agreementerDto.setAgreementer_agree_status("W");
+				agreementerDto.setAgree_reason(null);
+				agreementerDto.setAgreementer_agree_status_time(null);
+				apprAgreementerRepository.save(agreementerDto.toEntity());
+			}
+			
 			if (deleteFiles != null) {
 				System.out.println("test");
 		        for (Long id : deleteFiles) {
