@@ -73,7 +73,7 @@ public class Member {
     @Column(name = "annual_leave")
     private double annualLeave;
     
-    @Column(name = "signature")
+    @Column(name = "signature", columnDefinition = "LONGTEXT")
     private String signature;
 	
 	@Column(name="reg_date")

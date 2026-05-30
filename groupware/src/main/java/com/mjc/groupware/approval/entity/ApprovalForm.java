@@ -27,7 +27,7 @@ public class ApprovalForm {
 	@Column(name="approval_form_name")
 	private String approvalFormName;
 	
-	@Column(name="approval_form")
+	@Column(name="approval_form", columnDefinition = "LONGTEXT")
 	private String approvalForm;
 	
 	@Column(name="approval_form_status")
