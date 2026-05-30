@@ -112,6 +112,7 @@ public class MemberService {
 					.role(Role.builder().roleNo((long)2).build())
 					.status(100)
 					.regDate(dto.getReg_date())
+					.annualLeave(15.0)
 					.build());
 					
 		} catch(DataIntegrityViolationException e) {
