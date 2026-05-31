@@ -219,7 +219,7 @@ public class ChatRoomService {
 	    List<ChatRoomRead> readList = readRepository.findAll(spec);
 
 	    LocalDateTime lastReadTime = readList.isEmpty()
-	        ? LocalDateTime.MIN
+	        ? LocalDateTime.of(1970, 1, 1, 0, 0)
 	        : readList.get(0).getLastReadTime();
 
 	    // 3. 채팅방 조회
