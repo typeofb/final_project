@@ -14,7 +14,7 @@ layout:decorate="~{include/layout :: layout}">
     	<div class="toast-body hstack align-items-start gap-6">
       	<i class="ti ti-alert-circle fs-6"></i>
       		<div>
-        		<h5 class="text-white fs-3 mb-1">무자코 그룹웨어</h5>
+        		<h5 class="text-white fs-3 mb-1"><span th:text="${company != null ? company.company_name + ' 그룹웨어' : '무자코 그룹웨어'}"></span></h5>
         		<h6 class="text-white fs-2 mb-0"><span th:text="|${#authentication.principal.member.memberName}님 환영합니다!|"></span></h6>
       		</div>
       		<button type="button" class="btn-close btn-close-white fs-2 m-0 ms-auto shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>

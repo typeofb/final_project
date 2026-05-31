@@ -28,6 +28,8 @@ import com.mjc.groupware.notice.service.NoticeService;
 import com.mjc.groupware.plan.entity.Plan;
 import com.mjc.groupware.plan.service.PlanService;
 
+import com.mjc.groupware.company.dto.CompanyDto;
+import com.mjc.groupware.company.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -41,8 +43,7 @@ public class HomeController {
 	private final WorkSchedulePolicyRepository workSchedulePolicyRepository;
 	private final NoticeService noticeService;
     private final ChatRoomService chatRoomService;
-
-	
+    private final CompanyService companyService;
 	private final BoardService boardService; // 게시글 추가
 	
 	@GetMapping({"", "/", "/home"})
@@ -61,6 +62,9 @@ public class HomeController {
 	        model.addAttribute("todayAttendance", dto);
 	    }
 	    model.addAttribute("member", member);
+	    
+	    CompanyDto company = companyService.selectLatestCompanyProfile();
+	    model.addAttribute("company", company);
 	    
 	    // 오늘 날짜의 휴가가 있는지
 	    Plan plan = planService.selectAnnualPlan(member, today);
