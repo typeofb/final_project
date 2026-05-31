@@ -144,7 +144,7 @@
 										        <th:block th:if="${approverList[i].approverDecisionStatus == 'C'}">
 										          <th:block th:if="${approverList[i].member.signature != null}">
 										            <input type="hidden" th:value="${approverList[i].member.signature}" th:id="'approver_signature' + ${i + 1}">
-										            <img th:src="@{${approverList[i].member.signature}}" th:id="'approverSignImg' + ${i + 1}" class="signature-img" alt="서명 이미지">
+										            <img th:src="'data:image/png;base64,' + ${approverList[i].member.signature}" th:id="'approverSignImg' + ${i + 1}" class="signature-img" alt="서명 이미지">
 										          </th:block>
 										          <th:block th:if="${approverList[i].member.signature == null}">
 										            <input type="hidden" th:id="'approver_signature' + ${i + 1}">
@@ -182,7 +182,7 @@
 										        <th:block th:if="${agreementerList[i].agreementerAgreeStatus == 'C'}">
 										          <th:block th:if="${agreementerList[i].member.signature != null}">
 										            <input type="hidden" th:value="${agreementerList[i].member.signature}" th:id="'agreementer_signature' + ${i+1}">
-										            <img th:src="@{${agreementerList[i].member.signature}}" th:id="'agreementerSignImg' + ${i+1}" class="signature-img" alt="서명 이미지">
+										            <img th:src="'data:image/png;base64,' + ${agreementerList[i].member.signature}" th:id="'agreementerSignImg' + ${i+1}" class="signature-img" alt="서명 이미지">
 										          </th:block>
 										          <th:block th:if="${agreementerList[i].member.signature == null}">
 										            <input type="hidden" th:id="'agreementer_signature' + ${i+1}">
