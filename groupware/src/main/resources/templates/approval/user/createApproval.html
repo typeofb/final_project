@@ -6,7 +6,7 @@
 	layout:decorate="~{include/layout :: layout}">
 
 <th:block layout:fragment="content">
-	<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/45.0.0/ckeditor5.css" crossorigin>
+	<link rel="stylesheet" th:href="@{/css/ckeditor5.css}">
 	<!-- jQuery -->
 	<script th:src="@{/js/jquery-3.7.1.js}"></script>
 	<!-- jsTree -->
@@ -324,7 +324,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="https://cdn.ckeditor.com/ckeditor5/45.0.0/ckeditor5.umd.js" crossorigin></script>
+	<script th:src="@{/js/ckeditor5.umd.js}"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			  const startDateInput = document.getElementById('start_date');
@@ -550,7 +550,7 @@
 	    Underline
 	  } = window.CKEDITOR;
 
-	  const LICENSE_KEY = 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Nzc1MDcxOTksImp0aSI6ImNhNmQ1ZTQ0LTYyZTMtNGEwMC04MzhkLTkyYzFmZWEzMzIwZiIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiYjZmNzMxMTkifQ.NfQuYgUhx47Twoi6uFjRsx7PbJa-jIDx1hAYfsFHOU30umGCgXGcLquB6EH9diFdHlCEjGB-Cv0VBZySQo-BaA';
+	  const LICENSE_KEY = 'GPL';
 
 	  const editorConfig = {
 	    toolbar: {
