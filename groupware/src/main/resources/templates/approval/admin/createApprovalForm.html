@@ -279,6 +279,16 @@
 			}
 		};
 
+		function cleanScriptTags(html) {
+			if (!html) return '';
+			let cleaned = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+			const idx = cleaned.indexOf('document.addEventListener');
+			if (idx !== -1) cleaned = cleaned.substring(0, idx);
+			const idx2 = cleaned.indexOf('let editorInstance');
+			if (idx2 !== -1) cleaned = cleaned.substring(0, idx2);
+			return cleaned.trim();
+		}
+
 		ClassicEditor.create(document.querySelector('#editor'), editorConfig)
 	    .then(editor => {
 	        editorInstance = editor; // 에디터 인스턴스 저장
@@ -294,7 +304,7 @@
 	            if(!isConfirmed) return;
 
 	            const title = form.approval_form_name.value;
-	            const content = editorInstance.getData(); // 여기 수정 (editorInstance)
+	            const content = cleanScriptTags(editorInstance.getData());
 	            
 	            // ★ approval_form input이 없으니까 숨은 input 추가해줘야 함
 	            let hiddenInput = form.querySelector('input[name="approval_form"]');

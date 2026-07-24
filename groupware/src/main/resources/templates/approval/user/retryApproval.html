@@ -352,6 +352,16 @@
 				Underline
 			} = window.CKEDITOR;
 
+			function cleanScriptTags(html) {
+				if (!html) return '';
+				let cleaned = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+				const idx = cleaned.indexOf('document.addEventListener');
+				if (idx !== -1) cleaned = cleaned.substring(0, idx);
+				const idx2 = cleaned.indexOf('let editorInstance');
+				if (idx2 !== -1) cleaned = cleaned.substring(0, idx2);
+				return cleaned.trim();
+			}
+
 			const LICENSE_KEY = 'GPL';
 
 			const editorConfig = {
@@ -481,7 +491,7 @@
 						'resizeImage'
 					]
 				},
-				initialData: document.getElementById('appr_text').value,
+				initialData: cleanScriptTags(document.getElementById('appr_text').value),
 				licenseKey: LICENSE_KEY,
 				link: {
 					addTargetToExternalLinks: true,
@@ -559,7 +569,7 @@
 			if (!valid) {
 				alert(valid_msg);
 			} else {
-				document.querySelector("input[name='appr_text']").value = editorInstance.getData();
+				document.querySelector("input[name='appr_text']").value = cleanScriptTags(editorInstance.getData());
 		
 				let payload = new FormData(retryApprovalForm);
 				document.querySelectorAll(".file-item").forEach(item => {
