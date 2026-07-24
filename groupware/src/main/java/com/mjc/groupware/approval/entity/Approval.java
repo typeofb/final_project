@@ -48,7 +48,7 @@ public class Approval {
 	@Column(name="appr_title")
 	private String apprTitle;
 
-	@Column(name="appr_text")
+	@Column(name="appr_text", columnDefinition = "LONGTEXT")
 	private String apprText;
 	
 	@Column(name="appr_status")
