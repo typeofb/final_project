@@ -274,8 +274,10 @@ public class ApprovalController {
 	    Member member = memberService.selectMemberOne(memberDto);
 		
 		List<ApprovalForm> resultList = service.selectApprovalFormAll();
+		List<Member> memberList = memberService.selectMemberAll();
 		model.addAttribute("formList", resultList);
 		model.addAttribute("member", member);
+		model.addAttribute("memberList", memberList);
 		return "approval/user/createApproval";
 	}
 	

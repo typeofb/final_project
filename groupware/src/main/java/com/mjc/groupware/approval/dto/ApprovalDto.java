@@ -47,6 +47,12 @@ public class ApprovalDto {
 	
 	private Long parent_approval;
 	
+	// 대리 기안 관련 정보
+	private Long proxy_drafter;
+	private String proxy_drafter_name;
+	private String is_proxy;
+	private Long target_member_no; // 대리 기안 시 선택된 대상 사원번호
+	
 	public Approval toEntity() {
 		return toEntity(null); // 기본 결재 생성 시 parentApproval 없이
 	}
@@ -67,6 +73,8 @@ public class ApprovalDto {
 				.annualLeaveType(annual_leave_type)
 				.returnReason(return_reason)
 				.member(Member.builder().memberNo(appr_sender).build())
+				.proxyDrafter(proxy_drafter != null ? Member.builder().memberNo(proxy_drafter).build() : null)
+				.isProxy(is_proxy != null ? is_proxy : "N")
 				.approvalForm(ApprovalForm.builder().approvalFormNo(approval_type_no).build())
 				.parentApproval(parentApproval) // null 가능
 				.build();
@@ -88,6 +96,9 @@ public class ApprovalDto {
 				.annual_leave_type(approval.getAnnualLeaveType())
 				.return_reason(approval.getReturnReason())
 				.appr_sender(approval.getMember().getMemberNo())
+				.proxy_drafter(approval.getProxyDrafter() != null ? approval.getProxyDrafter().getMemberNo() : null)
+				.proxy_drafter_name(approval.getProxyDrafter() != null ? approval.getProxyDrafter().getMemberName() : null)
+				.is_proxy(approval.getIsProxy())
 				.approval_type_no(approval.getApprovalForm().getApprovalFormNo())
 				.parent_approval(approval.getParentApproval() != null ? approval.getParentApproval().getApprNo() : null)
 				.build();

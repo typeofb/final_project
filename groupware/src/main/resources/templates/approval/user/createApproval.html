@@ -80,6 +80,36 @@
 						<div class="card shadow-sm rounded-4 p-4 bg-white"
 							style="min-height: 600px; position: relative;" id="form_div">
 							<th:block>
+								<!-- 대리 기안 옵션 바 -->
+								<div class="card bg-light p-3 mb-3 border rounded-3">
+									<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+										<div class="form-check form-switch mb-0">
+											<input class="form-check-input" type="checkbox" id="is_proxy_check" onchange="toggleProxyMode(this)">
+											<label class="form-check-label fw-bold text-primary" for="is_proxy_check">
+												<i class="ti ti-user-check"></i> 현장/외근 사원 대리 기안 신청
+											</label>
+										</div>
+										<div id="proxyMemberSelectArea" style="display: none;">
+											<div class="d-flex align-items-center gap-2">
+												<label for="proxy_target_select" class="form-label mb-0 fw-semibold fs-3">대리 기안 대상 사원:</label>
+												<select class="form-select form-select-sm" id="proxy_target_select" style="min-width: 240px;" onchange="changeProxyTarget(this)">
+													<option value="">-- 대상 사원 선택 --</option>
+													<th:block th:each="m : ${memberList}">
+														<option th:if="${m.memberNo != member.memberNo}"
+																th:value="${m.memberNo}" 
+																th:data-name="${m.memberName}"
+																th:data-dept="${m.dept != null ? m.dept.deptName : '(부서미배정)'}"
+																th:data-pos="${m.pos != null ? m.pos.posName : '(직급미배정)'}"
+																th:data-leave="${m.annualLeave}"
+																th:text="|${m.memberName} (${m.dept != null ? m.dept.deptName : '미배정'} / ${m.pos != null ? m.pos.posName : '미배정'})|"></option>
+													</th:block>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<input type="hidden" id="is_proxy" name="is_proxy" value="N">
+								<input type="hidden" id="target_member_no" name="target_member_no" value="">
 								<input type="hidden" name="appr_sender"
 									th:value="${member.memberNo}">
 								<h4 id="approval_form_name" class="fw-bold text-center mb-4">양식
@@ -486,6 +516,71 @@
 	  }
 	};
 	
+	// 대리 기안 관련 자바스크립트
+	let originalSenderName = "";
+	let originalDeptName = "";
+	let originalPosName = "";
+	let originalAnnualLeave = "";
+
+	document.addEventListener("DOMContentLoaded", function() {
+		originalSenderName = document.querySelector("td[name='sender_name']") ? document.querySelector("td[name='sender_name']").innerText : "";
+		originalDeptName = document.querySelector("td[name='dept_name']") ? document.querySelector("td[name='dept_name']").innerText : "";
+		originalPosName = document.querySelector("td[name='pos_name']") ? document.querySelector("td[name='pos_name']").innerText : "";
+		originalAnnualLeave = document.getElementById("annual_leave") ? document.getElementById("annual_leave").value : "0";
+	});
+
+	function toggleProxyMode(checkbox) {
+		const proxyArea = document.getElementById('proxyMemberSelectArea');
+		const isProxyInput = document.getElementById('is_proxy');
+		const targetSelect = document.getElementById('proxy_target_select');
+		
+		if (checkbox.checked) {
+			proxyArea.style.display = 'block';
+			isProxyInput.value = 'Y';
+		} else {
+			proxyArea.style.display = 'none';
+			isProxyInput.value = 'N';
+			document.getElementById('target_member_no').value = '';
+			targetSelect.value = '';
+			resetSenderInfoToOriginal();
+		}
+	}
+
+	function changeProxyTarget(select) {
+		const selectedOpt = select.options[select.selectedIndex];
+		if (!select.value) {
+			document.getElementById('target_member_no').value = '';
+			resetSenderInfoToOriginal();
+			return;
+		}
+		
+		document.getElementById('target_member_no').value = select.value;
+		
+		const name = selectedOpt.getAttribute('data-name');
+		const dept = selectedOpt.getAttribute('data-dept');
+		const pos = selectedOpt.getAttribute('data-pos');
+		const leave = selectedOpt.getAttribute('data-leave');
+		
+		document.querySelector("td[name='sender_name']").innerText = name + " (대리 기안)";
+		document.querySelectorAll("td[name='dept_name']").forEach(el => el.innerText = dept);
+		document.querySelectorAll("td[name='pos_name']").forEach(el => el.innerText = pos);
+		document.getElementById('annual_leave').value = leave;
+		const annualLeaveSpan = document.querySelector("#annualInfoText span");
+		if (annualLeaveSpan) annualLeaveSpan.innerText = leave;
+		
+		if (typeof updateAnnualLeave === 'function') updateAnnualLeave();
+	}
+
+	function resetSenderInfoToOriginal() {
+		if (originalSenderName) document.querySelector("td[name='sender_name']").innerText = originalSenderName;
+		if (originalDeptName) document.querySelectorAll("td[name='dept_name']").forEach(el => el.innerText = originalDeptName);
+		if (originalPosName) document.querySelectorAll("td[name='pos_name']").forEach(el => el.innerText = originalPosName);
+		if (originalAnnualLeave) document.getElementById('annual_leave').value = originalAnnualLeave;
+		const annualLeaveSpan = document.querySelector("#annualInfoText span");
+		if (annualLeaveSpan && originalAnnualLeave) annualLeaveSpan.innerText = originalAnnualLeave;
+		if (typeof updateAnnualLeave === 'function') updateAnnualLeave();
+	}
+
 	// 작성 내용 초기화
 	const clearApprovalForm = () => {
 	  const todayStr = new Date().toISOString().split('T')[0];
@@ -1140,6 +1235,11 @@
 				valid = true;
 			}
 			
+			if (document.getElementById('is_proxy_check').checked && !document.getElementById('target_member_no').value) {
+				alert('대리 기안 대상 사원을 선택해주세요.');
+				return;
+			}
+
 			if(valid == false) {
 				alert(valid_msg);
 			} else {

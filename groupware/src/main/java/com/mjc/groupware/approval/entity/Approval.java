@@ -78,6 +78,13 @@ public class Approval {
 	@ManyToOne
 	@JoinColumn(name="appr_sender")
 	private Member member;
+
+	@ManyToOne
+	@JoinColumn(name="proxy_drafter")
+	private Member proxyDrafter;
+
+	@Column(name="is_proxy")
+	private String isProxy;
 	
 	@ManyToOne
 	@JoinColumn(name="approval_type_no")

@@ -125,6 +125,15 @@ public class ApprovalService {
 		int result = 0;
 		
 		try {
+			// 대리 기안 처리
+			if ("Y".equals(approvalDto.getIs_proxy()) && approvalDto.getTarget_member_no() != null) {
+				approvalDto.setAppr_sender(approvalDto.getTarget_member_no());
+				approvalDto.setProxy_drafter(member.getMemberNo());
+			} else {
+				approvalDto.setAppr_sender(member.getMemberNo());
+				approvalDto.setProxy_drafter(null);
+				approvalDto.setIs_proxy("N");
+			}
 			
 			if(approvalDto.getAgreementer_no() != null) { 
 				approvalDto.setAppr_status("A");

@@ -100,7 +100,12 @@
 					<tbody>
 						<tr>
 							<th class="text-center bg-light" style="width: 15%;">기안자</th>
-							<td style="width: 20%;" th:text="${approval.member.memberName}"></td>
+							<td style="width: 20%;">
+								<span th:text="${approval.member.memberName}"></span>
+								<th:block th:if="${approval.isProxy == 'Y' and approval.proxyDrafter != null}">
+									<br><small class="text-primary fw-bold" th:text="| (대리 작성: ${approval.proxyDrafter.memberName})|"></small>
+								</th:block>
+							</td>
 							<th class="text-center bg-light" style="width: 15%;">부서</th>
 							<td style="width: 20%;" th:if="${approval.member.dept != null}"
 								th:text="${approval.member.dept.deptName}"></td>
