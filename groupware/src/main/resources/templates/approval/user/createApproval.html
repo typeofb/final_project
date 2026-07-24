@@ -331,6 +331,14 @@
 			  const endDateInput = document.getElementById('end_date');
 			  const useAnnualLeave = document.getElementById('use_annual_leave');  // 사용 연차 표시 요소
 	
+			  const todayStr = new Date().toISOString().split('T')[0];
+			  if (startDateInput && !startDateInput.value) {
+			    startDateInput.value = todayStr;
+			  }
+			  if (endDateInput && !endDateInput.value) {
+			    endDateInput.value = todayStr;
+			  }
+
 			  // 시작일 변경 시 종료일 최소값 설정
 			  startDateInput.addEventListener('change', function () {
 			    if (startDateInput.value) {
@@ -480,9 +488,10 @@
 	
 	// 작성 내용 초기화
 	const clearApprovalForm = () => {
+	  const todayStr = new Date().toISOString().split('T')[0];
 	  document.querySelector("input[name='appr_title']").value = "";
-	  document.getElementById("start_date").value = "";
-	  document.getElementById("end_date").value = "";
+	  document.getElementById("start_date").value = todayStr;
+	  document.getElementById("end_date").value = todayStr;
 	  document.getElementById("use_annual_leave").innerText = "0";
 	  document.getElementById("am").checked = false;
 	  document.getElementById("pm").checked = false;
