@@ -97,33 +97,7 @@
 											</table></td>
 									</tr>
 									<tr>
-										<th class="text-center bg-light">합의자</th>
-										<td colspan="5">
-											<table class="table table-bordered text-center w-100">
-												<thead class="table-light">
-													<tr id="agreementer">
-														<th:block th:each="i : ${#numbers.sequence(0, 4)}">
-															<th class="text-center bg-light" style="width: 20%;"
-																name="agreementer"
-																th:text="${i < agreementerList.size()} ? ${agreementerList[i].member.memberName} : ''">
-															</th>
-														</th:block>
-													</tr>
-												</thead>
-												<tbody>
-													<tr id="agreementer_signature">
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-														</tr>
-												</tbody>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<th class="text-center bg-light">참조자</th>
+										<th class="text-center bg-light">참조 / 회람자</th>
 										<td colspan="5"><th:block
 												th:if="${!#lists.isEmpty(referencerList)}"
 												th:each="referencer, status : ${referencerList}">

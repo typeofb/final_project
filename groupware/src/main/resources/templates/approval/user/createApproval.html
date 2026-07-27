@@ -186,32 +186,7 @@
 											</td>
 										</tr>
 										<tr>
-											<th class="text-center bg-light">합의자</th>
-											<td colspan="5">
-												<table class="table table-bordered text-center w-100">
-													<thead class="table-light">
-														<tr id="agreementer">
-															<th class="text-center bg-light" style="width: 20%;" name="agreementer"></th>
-															<th class="text-center bg-light" style="width: 20%;" name="agreementer"></th>
-															<th class="text-center bg-light" style="width: 20%;" name="agreementer"></th>
-															<th class="text-center bg-light" style="width: 20%;" name="agreementer"></th>
-															<th class="text-center bg-light" style="width: 20%;" name="agreementer"></th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr id="agreementer_signature">
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-															<td class="text-center" style="height: 80px;"></td>
-														</tr>
-													</tbody>
-												</table>
-											</td>
-										</tr>
-										<tr>
-											<th class="text-center bg-light">참조자</th>
+											<th class="text-center bg-light">참조 / 회람자</th>
 											<td colspan="5"><div id="referencer" name="referencer"></div></td>
 										</tr>
 										<tr>
@@ -309,9 +284,9 @@
 						</div>
 					</div>
 					<BR> <bR>
-					<!-- 하단: 결재자/참조자/합의자 -->
+					<!-- 하단: 결재자/참조자 -->
 					<div class="row gx-3 text-center" style="height: 200px;">
-						<div class="col d-flex flex-column">
+						<div class="col-6 d-flex flex-column">
 							<div class="d-flex justify-content-between mb-2">
 								<span class="fw-semibold">결재자</span>
 								<button class="btn btn-primary btn-sm"
@@ -322,22 +297,15 @@
 								<ul id="approverList" class="list-group fs-6 mb-0"></ul>
 							</div>
 						</div>
-						<div class="col d-flex flex-column">
-							<div class="d-flex justify-content-between mb-2">
-								<span class="fw-semibold">합의자</span>
-								<button class="btn btn-primary btn-sm"
-									onclick="agreementer_btn();">등록</button>
-							</div>
-							<div
-								class="flex-grow-1 overflow-auto border rounded bg-white p-2" style="max-height: 200px;">
-								<ul id="agreementerList" class="list-group fs-6 mb-0"></ul>
-							</div>
-						</div>
-						<div class="col d-flex flex-column">
-							<div class="d-flex justify-content-between mb-2">
-								<span class="fw-semibold">참조자</span>
-								<button class="btn btn-primary btn-sm"
-									onclick="referencer_btn();">등록</button>
+						<div class="col-6 d-flex flex-column">
+							<div class="d-flex justify-content-between mb-2 align-items-center">
+								<span class="fw-semibold">참조 / 회람자</span>
+								<div>
+									<button class="btn btn-outline-primary btn-sm me-1" type="button"
+										onclick="all_referencer_btn();">전원 회람</button>
+									<button class="btn btn-primary btn-sm" type="button"
+										onclick="referencer_btn();">등록</button>
+								</div>
 							</div>
 							<div
 								class="flex-grow-1 overflow-auto border rounded bg-white p-2" style="max-height: 200px;">
@@ -959,64 +927,7 @@
 	 
 	 
 	 
- 	// 합의자 등록버튼
-    const agreementer_btn = function() {
-	    let checkedMember = [];
-	    document.querySelectorAll('.member-checkbox:checked').forEach(function(checkbox) {
-	        checkedMember.push(checkbox.value);
-	    });
-	
-	    checkedMember.forEach(function(member) {
-	        let isAlreadyAddedApprover = Array.from(document.querySelectorAll('.selected_approver')).some(el => el.value === member);
-	        let isAlreadyAddedReferencer = Array.from(document.querySelectorAll('.selected_referencer')).some(el => el.value === member);
-	        let isAlreadyAddedAgreementer = Array.from(document.querySelectorAll('.selected_agreementer')).some(el => el.value === member);
-	
-	        if (!isAlreadyAddedApprover && !isAlreadyAddedReferencer && !isAlreadyAddedAgreementer) {
-	            fetch('/member/' + member, {
-	                method: 'GET'
-	            })
-	            .then(response => response.json())
-	            .then(data => {
-	                const list = document.getElementById("agreementerList");
-	
-	                const li = document.createElement("li");
-	                li.className = 'list-group-item agreementer_li';
-	                li.innerHTML = `<button class="selected_agreementer btn-sm btn btn-rounded btn-light" value="${data.member_no}">-</button> ${data.member_name}`;
-	                list.appendChild(li);
-	
-	                // 체크 해제 + 비활성화
-	                const checkbox = document.querySelector(`.member-checkbox[value="${member}"]`);
-	                if (checkbox) {
-	                    checkbox.checked = false;
-	                    checkbox.disabled = true;
-	                }
-	            })
-	            .catch(err => {
-	                console.error("사원 목록 불러오기 실패:", err);
-	            });
-	        } else {
-	            alert('각 항목에 추가된 사원은 중복으로 추가 할 수 없습니다.');
-	            console.log(`이미 추가된 사원: ${member}`);
-	        }
-	    });
-	};
-	
-	 // 합의자 목록에서 - 버튼 클릭 시 항목 제거
-    document.getElementById('agreementerList').addEventListener('click', function(event) {
-	    if (event.target && event.target.classList.contains('selected_agreementer')) {
-	        let agreementerId = event.target.value;
-	
-	        let listItem = event.target.closest('li');
-	        if (listItem) {
-	            listItem.remove();
-	        }
-	
-	        const checkbox = document.querySelector(`.member-checkbox[value="${agreementerId}"]`);
-	        if (checkbox) {
-	            checkbox.disabled = false;
-	        }
-	    }
-	});
+
 	 
 	 
  	// 참조자 등록버튼
@@ -1119,47 +1030,6 @@
 
                 approverThList[index].appendChild(input);
                 index++;
-            }
-        });
-        
-        // agreementer
-		let agreementerList = document.querySelectorAll('.agreementer_li');
-        
-        let agreementerThList = document.querySelectorAll('#agreementer th');
-        let agreementerTdList = document.querySelectorAll('#agreementer_signature td');
-        
-        if (agreementerList.length > 5) {
-            alert('합의자는 최대 5명까지 지정할 수 있습니다.');
-            return;
-        }
-
-        // 기존 내용 초기화
-        agreementerThList.forEach(th => th.innerHTML = '');
-        agreementerTdList.forEach(td => td.innerHTML = '');
-
-        let index1 = 0;
-        agreementerList.forEach(agreementer => {
-            let button = agreementer.querySelector('.selected_agreementer');
-
-            if (button && index1 < 5) {
-                let agreementerId = button.value;
-                let agreementerName = agreementer.innerText.replace('-', '').trim();
-                agreementerName = agreementerName.split(' ')[0];
-
-                // 해당 위치에 이름 삽입
-                agreementerThList[index1].textContent = agreementerName;
-
-                // 서명란 입력 (예시로 서명 이미지나 텍스트가 들어갈 수 있음)
-                agreementerTdList[index1].textContent = '서명란';
-
-                // hidden input 추가
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'agreementer_no';
-                input.value = agreementerId;
-
-                agreementerThList[index1].appendChild(input);
-                index1++;
             }
         });
 

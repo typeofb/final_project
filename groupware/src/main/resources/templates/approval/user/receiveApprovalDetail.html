@@ -155,46 +155,7 @@
 								</table></td>
 						</tr>
 						<tr>
-							<th class="text-center bg-light">합의자</th>
-							<td colspan="5">
-								<table class="table table-bordered text-center w-100">
-									<thead class="table-light">
-										<tr id="agreementer">
-										  <th:block th:each="i : ${#numbers.sequence(0, 4)}">
-										    <th class="text-center bg-light" style="width: 20%;" name="agreementer"
-										        th:text="${i < agreementerList.size()} ? ${agreementerList[i].member.memberName} : ''">
-										    </th>
-										  </th:block>
-										</tr>
-									</thead>
-									<tbody>
-										<tr id="agreementer_signature">
-										  <th:block th:each="i : ${#numbers.sequence(0, 4)}">
-										    <td class="text-center" style="height: 80px; padding: 0;">
-										      <th:block th:if="${i < agreementerList.size()}">
-										        <th:block th:if="${agreementerList[i].agreementerAgreeStatus == 'C'}">
-										          <th:block th:if="${agreementerList[i].member.signature != null}">
-										            <input type="hidden" th:value="${agreementerList[i].member.signature}" th:id="'agreementer_signature' + ${i+1}">
-										            <img th:src="'data:image/png;base64,' + ${agreementerList[i].member.signature}" th:id="'agreementerSignImg' + ${i+1}" class="signature-img" alt="서명 이미지">
-										          </th:block>
-										          <th:block th:if="${agreementerList[i].member.signature == null}">
-										            <input type="hidden" th:id="'agreementer_signature' + ${i+1}">
-										            <img th:src="@{/img/approval_btn.png}" class="signature-img" alt="서명 이미지">
-										          </th:block>
-										        </th:block>
-										        <th:block th:if="${agreementerList[i].agreementerAgreeStatus == 'R'}">
-										        	<img th:src="@{/img/companion_btn.png}" class="signature-img" alt="서명 이미지">
-										        </th:block>
-										      </th:block>
-										    </td>
-										  </th:block>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<th class="text-center bg-light">참조자</th>
+							<th class="text-center bg-light">참조 / 회람자</th>
 							<td colspan="5"><th:block
 									th:if="${!#lists.isEmpty(referencerList)}"
 									th:each="referencer, status : ${referencerList}">
@@ -262,21 +223,6 @@
 							</th:block>
 						</th:block>
 					</th:block>
-					
-					<!-- 합의자 - 합의를 안했을 때 -->
-					<th:block th:each="agreementer : ${agreementerList}">
-						<th:block
-									th:if="${agreementer.member.memberNo == member.memberNo}">
-						<th:block th:if="${agreementer.agreementerAgreeStatus == 'W'}">
-								<div class="d-flex justify-content-end gap-2">
-									<button class="btn btn-primary px-4" onclick="agree();">수락</button>
-									<button class="btn btn-danger px-4" data-bs-toggle="modal"
-										data-bs-target="#approvalReasonModal">거절</button>
-								</div>
-							</th:block>
-						</th:block>
-					</th:block>
-					
 				</th:block>
 			</div>
 		</div>
