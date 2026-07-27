@@ -127,18 +127,6 @@
 									<div th:text="${approval.startDate}"></div>
 									<span> ~ </span>
 									<div th:text="${approval.endDate}"></div>
-									<th:block th:if="${approval.useAnnualLeave > 0}">
-								    &nbsp;&nbsp;&nbsp;
-								    연차 종류 : 
-								    <span th:switch="${approval.annualLeaveType}">
-								        <span th:case="0">종일 연차</span>
-								        <span th:case="1">오전 반차</span>
-								        <span th:case="2">오후 반차</span>
-								        <span th:case="*">알 수 없음</span>
-								    </span>
-								    &nbsp;/&nbsp;
-								    사용 연차 : <span id="use_annual_leave" th:text="${approval.useAnnualLeave}">0</span>
-									</th:block>
 								</div>
 							</td>
 						</tr>
