@@ -36,4 +36,11 @@ public class ApprReferencer {
 	@ManyToOne
 	@JoinColumn(name="referencer_no", nullable=false)
 	private Member member;
+
+	@Column(name="referencer_status", columnDefinition = "CHAR(1) DEFAULT 'N'")
+	private String referencerStatus;
+
+	public void updateReferencerStatus(String status) {
+		this.referencerStatus = status;
+	}
 }

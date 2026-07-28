@@ -135,14 +135,26 @@ public class ApprovalService {
 				approvalDto.setIs_proxy("N");
 			}
 			
-			if(approvalDto.getAgreementer_no() != null) { 
+			boolean hasApprovers = approvalDto.getApprover_no() != null && !approvalDto.getApprover_no().isEmpty();
+			boolean hasAgreementers = approvalDto.getAgreementer_no() != null && !approvalDto.getAgreementer_no().isEmpty();
+			boolean hasReferencers = approvalDto.getReferencer_no() != null && !approvalDto.getReferencer_no().isEmpty();
+
+			if (!hasApprovers && !hasAgreementers && !hasReferencers) {
+				throw new IllegalArgumentException("결재자 또는 참조/회람자는 최소 한 명 이상 등록되어야 합니다.");
+			}
+
+			if (hasAgreementers) { 
 				approvalDto.setAppr_status("A");
-			} else {
+			} else if (hasApprovers) {
 				approvalDto.setAppr_status("D");
+				approvalDto.setAppr_order_status(1);
+			} else {
+				// 결재자/합의자가 없고 참조/회람자만 등록된 경우 즉시 승인/완료('C') 처리
+				approvalDto.setAppr_status("C");
 				approvalDto.setAppr_order_status(1);
 			}
 			
-			if(approvalDto.getApproval_type_no() != 1) {
+			if (approvalDto.getApproval_type_no() != 1) {
 				approvalDto.setUse_annual_leave(0);
 			}
 			
@@ -155,17 +167,16 @@ public class ApprovalService {
 			ApprReferencerDto referencerDto = new ApprReferencerDto();
 			
 			// 결재자
-			approverDto.setAppr_no(apprNo);
-			approverDto.setApprovers(approvalDto.getApprover_no());
-			if(approvalDto.getApprover_no() == null || approvalDto.getApprover_no().isEmpty()) {
-				throw new IllegalArgumentException("결재자는 최소 한 명 이상 등록되어야 합니다.");
-			}
-			List<ApprApprover> approverList = approverDto.toEntityList();
-			for(ApprApprover entity : approverList) {
-				try {
-					apprApproverRepository.save(entity);
-				} catch(Exception e) {
-					e.printStackTrace();
+			if (hasApprovers) {
+				approverDto.setAppr_no(apprNo);
+				approverDto.setApprovers(approvalDto.getApprover_no());
+				List<ApprApprover> approverList = approverDto.toEntityList();
+				for (ApprApprover entity : approverList) {
+					try {
+						apprApproverRepository.save(entity);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			
@@ -214,9 +225,6 @@ public class ApprovalService {
 			 // 결재 알림 보내기
 			 Set<Long> targetMemberNoSet = new HashSet<>();
 			 
-			 boolean hasAgreementers = approvalDto.getAgreementer_no() != null && !approvalDto.getAgreementer_no().isEmpty();
-			 boolean hasReferencers = approvalDto.getReferencer_no() != null && !approvalDto.getReferencer_no().isEmpty();
-
 			// 1합의자
 			if (hasAgreementers) {
 			    targetMemberNoSet.addAll(approvalDto.getAgreementer_no());
@@ -228,8 +236,9 @@ public class ApprovalService {
 			}
 
 			// 결재자 (합의자 없을 때만)
-			if (!hasAgreementers && approverList != null && !approverList.isEmpty()) {
-			    for (ApprApprover a : approverList) {
+			if (!hasAgreementers && hasApprovers) {
+				List<ApprApprover> savedApproverList = apprApproverRepository.findAllByApproval_ApprNo(apprNo);
+			    for (ApprApprover a : savedApproverList) {
 			        if (a.getApproverOrder() == 1 &&
 			            a.getMember() != null &&
 			            a.getMember().getMemberNo() != null) {
@@ -353,6 +362,23 @@ public class ApprovalService {
 	public List<ApprReferencer> selectApprReferencerAllByApprovalNo(Long id) {
 		List<ApprReferencer> referencerList = apprReferencerRepository.findAllByApproval_ApprNo(id);
 		return referencerList;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public int confirmReferencer(Long apprNo, Long memberNo) {
+		try {
+			ApprReferencer referencer = apprReferencerRepository
+				.findByApproval_ApprNoAndMember_MemberNo(apprNo, memberNo)
+				.orElse(null);
+			if (referencer != null) {
+				referencer.updateReferencerStatus("Y");
+				apprReferencerRepository.save(referencer);
+				return 1;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	// 결재자 - 결재 승인(Dto에 Setter)

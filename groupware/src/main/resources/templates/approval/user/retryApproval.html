@@ -527,6 +527,9 @@
 		
 			const approverThList = document.querySelectorAll('#approver th');
 			const hasApprover = Array.from(approverThList).some(th => th.textContent.trim() !== '');
+			const hasReferencer = document.querySelectorAll("span[name='referencerSpan']").length > 0;
+			const agreementerThList = document.querySelectorAll('#agreementer th');
+			const hasAgreementer = Array.from(agreementerThList).some(th => th.textContent.trim() !== '');
 		
 			if (!retryApprovalForm.appr_title.value) {
 				valid_msg += '결재 제목을 입력해주세요.';
@@ -534,8 +537,8 @@
 				valid_msg += '시작일을 입력해주세요.';
 			} else if (!retryApprovalForm.end_date.value) {
 				valid_msg += '종료일을 입력해주세요.';
-			} else if (!hasApprover) {
-				valid_msg += '결재자는 한명이상 등록되어야합니다.';
+			} else if (!hasApprover && !hasReferencer && !hasAgreementer) {
+				valid_msg += '결재자 또는 참조/회람자는 1명 이상 등록되어야 합니다.';
 			} else {
 				valid = true;
 			}
@@ -613,4 +616,5 @@
 
 	<!-- Bootstrap Common JS Files End -->
 </th:block>
+
 </html>

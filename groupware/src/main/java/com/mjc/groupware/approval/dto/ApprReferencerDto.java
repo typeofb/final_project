@@ -27,6 +27,7 @@ public class ApprReferencerDto {
 	
 	public List<ApprReferencer> toEntityList() {
 		List<ApprReferencer> entityList = new ArrayList<>();
+		if (referencers == null) return entityList;
 		
 		for(Long no : referencers) {
 			ApprReferencer referencer = ApprReferencer.builder()

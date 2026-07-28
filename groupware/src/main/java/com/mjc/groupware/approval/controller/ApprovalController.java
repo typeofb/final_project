@@ -326,7 +326,9 @@ public class ApprovalController {
 	    memberDto.setMember_id(userId);
 	    Member entity = memberService.selectMemberOne(memberDto);
 		
-		System.out.println("결재자 : "+approvalDto.getApprover_no().get(0));
+		if (approvalDto.getApprover_no() != null && !approvalDto.getApprover_no().isEmpty()) {
+			System.out.println("결재자 : " + approvalDto.getApprover_no().get(0));
+		}
 		
 		int result = service.createApprovalApi(approvalDto, files, entity);
 		
@@ -519,11 +521,36 @@ public class ApprovalController {
 	    
 		if(result > 0) {
 			resultMap.put("res_code", "200");
-			resultMap.put("res_msg", "결재가 재요청되었습니다.");
+			resultMap.put("res_msg", "결재 재요청에 성공하였습니다.");
 		}
 	    
 	    return resultMap;
 	}
 	
+	// 회람 확인 API
+	@PostMapping("/approval/referencer/confirm/{id}")
+	@ResponseBody
+	public Map<String, String> confirmReferencerApi(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
+		Map<String, String> resultMap = new HashMap<>();
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "회람 확인 처리 실패");
+
+		if (userDetails != null) {
+			String userId = userDetails.getUsername();
+			MemberDto memberDto = new MemberDto();
+			memberDto.setMember_id(userId);
+			Member entity = memberService.selectMemberOne(memberDto);
+
+			if (entity != null) {
+				int result = service.confirmReferencer(id, entity.getMemberNo());
+				if (result > 0) {
+					resultMap.put("res_code", "200");
+					resultMap.put("res_msg", "회람이 확인되었습니다.");
+				}
+			}
+		}
+
+		return resultMap;
+	}
 	
 }

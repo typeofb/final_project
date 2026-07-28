@@ -36,6 +36,7 @@ public class ApprApproverDto {
 	
 	public List<ApprApprover> toEntityList() {
 	    List<ApprApprover> entityList = new ArrayList<>();
+	    if (approvers == null) return entityList;
 
 	    for (int i = 0; i < approvers.size(); i++) {
 	        Long no = approvers.get(i);

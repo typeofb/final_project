@@ -33,6 +33,7 @@ public class ApprAgreementerDto {
 	
 	public List<ApprAgreementer> toEntityList() {
 		List<ApprAgreementer> entityList = new ArrayList<>();
+		if (agreementers == null) return entityList;
 		
 		for(Long no : agreementers) {
 			ApprAgreementer agreementer = ApprAgreementer.builder()

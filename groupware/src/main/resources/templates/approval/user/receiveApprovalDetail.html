@@ -49,23 +49,26 @@
 		<br>
 
 		<!-- Tabs -->
-		<ul class="nav nav-pills user-profile-tab mb-4" id="approval-tab" role="tablist">
+		<ul class="nav nav-pills user-profile-tab mb-4 flex-nowrap overflow-auto" id="approval-tab" role="tablist">
 		  <li class="nav-item" role="presentation">
-		    <a class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3"
+		    <a class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 text-nowrap"
 		       th:href="@{/approval}" role="tab" aria-selected="true">
-		      <span class="d-none d-md-block">보낸 문서함</span>
+		      <i class="ti ti-send me-2 fs-5"></i>
+		      <span>보낸 문서함</span>
 		    </a>
 		  </li>
 		  <li class="nav-item" role="presentation">
-		    <a class="nav-link position-relative rounded-0 active d-flex align-items-center justify-content-center bg-transparent fs-3 py-3"
+		    <a class="nav-link position-relative rounded-0 active d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 text-nowrap"
 		       th:href="@{/approval/receive}" role="tab" aria-selected="false">
-		      <span class="d-none d-md-block">받은 문서함</span>
+		      <i class="ti ti-inbox me-2 fs-5"></i>
+		      <span>받은 문서함</span>
 		    </a>
 		  </li>
 		  <li class="nav-item" role="presentation">
-		    <a class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3"
+		    <a class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 text-nowrap"
 		       th:href="@{/approval/create}" role="tab" aria-selected="false">
-		      <span class="d-none d-md-block">결재 작성</span>
+		      <i class="ti ti-file-plus me-2 fs-5"></i>
+		      <span>결재 작성</span>
 		    </a>
 		  </li>
 		</ul>
@@ -159,13 +162,15 @@
 							<td colspan="5"><th:block
 									th:if="${!#lists.isEmpty(referencerList)}"
 									th:each="referencer, status : ${referencerList}">
-									<th:block th:if="${referencerList.size() != status.count}">
-										<span th:text="|${referencer.member.memberName} /|"></span>
-									</th:block>
-									<th:block th:if="${referencerList.size() == status.count}">
+									<span class="d-inline-flex align-items-center me-1">
 										<span th:text="${referencer.member.memberName}"></span>
-									</th:block>
-								</th:block></td>
+										<i th:if="${referencer.referencerStatus == 'Y'}"
+											class="ti ti-check text-success font-weight-bold ms-1"
+											style="color: #198754; font-weight: bold;" title="회람 확인 완료"></i>
+										<th:block th:if="${referencerList.size() != status.count}">&nbsp;/</th:block>
+									</span>
+								</th:block>
+							</td>
 						</tr>
 						<tr>
 							<th class="text-center bg-light">첨부 파일</th>
@@ -223,6 +228,17 @@
 							</th:block>
 						</th:block>
 					</th:block>
+
+					<!-- 회람자 - 확인을 안했을 때 -->
+					<th:block th:each="referencer : ${referencerList}">
+						<th:block
+							th:if="${referencer.member.memberNo == member.memberNo and (referencer.referencerStatus == null or referencer.referencerStatus == 'N')}">
+							<div class="d-flex justify-content-end gap-2 mt-3">
+								<button class="btn btn-success px-4" onclick="confirmReferencer();">회람 확인</button>
+							</div>
+						</th:block>
+					</th:block>
+
 				</th:block>
 			</div>
 		</div>
@@ -435,23 +451,49 @@
 		                },
 		                body: payload
 		            })
-		                .then(response => response.json())
-		                .then(async data => {
-		                    await alert(data.res_msg);
-		                    if (data.res_code == '200') {
-		                        console.log('성공');
-		                        location.href = '/approval/receive/detail/' + apprNo;
-		                    }
-		                })
-		                .catch(error => {
-		                    console.error("에러 발생:", error);
-		                    alert("에러 발생: " + error.message);
-		                });
+					.then(response => response.json())
+					.then(async data => {
+						await alert(data.res_msg);
+						if (data.res_code == '200') {
+							console.log('성공');
+							location.href = '/approval/receive/detail/' + apprNo;
+						}
+					})
+					.catch(error => {
+						console.error("에러 발생:", error);
+						alert("에러 발생: " + error.message);
+					});
 		        }
 		    } else {
 		        alert('사유를 입력해주세요.');
 		    }
 		});
+
+		async function confirmReferencer() {
+			const apprNo = document.getElementById('approvalNo').value;
+			const isConfirmed = await confirm('회람 내용을 확인하시겠습니까?');
+			if (!isConfirmed) return;
+
+			const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').content;
+			const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
+			fetch('/approval/referencer/confirm/' + apprNo, {
+				method: 'POST',
+				headers: {
+					[csrfHeaderName]: csrfToken
+				}
+			})
+			.then(response => response.json())
+			.then(async data => {
+				await alert(data.res_msg);
+				if (data.res_code == '200') {
+					location.reload();
+				}
+			})
+			.catch(error => {
+				console.error('회람 확인 처리 에러:', error);
+			});
+		}
 
 	</script>
 
@@ -478,4 +520,5 @@
 
 	<!-- Bootstrap Common JS Files End -->
 </th:block>
+
 </html>
