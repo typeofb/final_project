@@ -19,6 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mjc.groupware.approval.dto.AutoApprovalLineResponseDto;
+import com.mjc.groupware.approval.entity.ApprovalLine;
+import com.mjc.groupware.approval.entity.ApprovalLineDetail;
+import com.mjc.groupware.approval.repository.ApprovalLineDetailRepository;
+import com.mjc.groupware.approval.repository.ApprovalLineRepository;
 import com.mjc.groupware.approval.dto.ApprAgreementerDto;
 import com.mjc.groupware.approval.dto.ApprApproverDto;
 import com.mjc.groupware.approval.dto.ApprReferencerDto;
@@ -61,6 +66,8 @@ public class ApprovalService {
 	private final MemberRepository memberRepository;
 	private final ApprovalMapper approvalMapper;
 	private final ApprovalAttachService approvalAttachService;
+	private final ApprovalLineRepository approvalLineRepository;
+	private final ApprovalLineDetailRepository approvalLineDetailRepository;
 	
 	// 알람
 	private final ApprovalAlarmService approvalAlarmService;
@@ -138,6 +145,39 @@ public class ApprovalService {
 			boolean hasApprovers = approvalDto.getApprover_no() != null && !approvalDto.getApprover_no().isEmpty();
 			boolean hasAgreementers = approvalDto.getAgreementer_no() != null && !approvalDto.getAgreementer_no().isEmpty();
 			boolean hasReferencers = approvalDto.getReferencer_no() != null && !approvalDto.getReferencer_no().isEmpty();
+
+			// 결재자 및 합의자가 모두 지정되지 않은 경우, DB 지정 기본 결재선 또는 조직 자동 결재라인 세팅
+			if (!hasApprovers && !hasAgreementers) {
+				List<AutoApprovalLineResponseDto> autoLine = selectAutoApprovalLineResponse(approvalDto.getAppr_sender(), approvalDto.getApproval_type_no());
+				if (autoLine != null && !autoLine.isEmpty()) {
+					List<Long> autoApproverNos = new ArrayList<>();
+					List<Long> autoAgreementerNos = new ArrayList<>();
+					List<Long> autoReferencerNos = new ArrayList<>();
+
+					for (AutoApprovalLineResponseDto autoDto : autoLine) {
+						if ("AGREEMENTER".equalsIgnoreCase(autoDto.getAppr_type())) {
+							autoAgreementerNos.add(autoDto.getMember_no());
+						} else if ("REFERENCER".equalsIgnoreCase(autoDto.getAppr_type())) {
+							autoReferencerNos.add(autoDto.getMember_no());
+						} else {
+							autoApproverNos.add(autoDto.getMember_no());
+						}
+					}
+
+					if (!autoApproverNos.isEmpty()) {
+						approvalDto.setApprover_no(autoApproverNos);
+						hasApprovers = true;
+					}
+					if (!autoAgreementerNos.isEmpty()) {
+						approvalDto.setAgreementer_no(autoAgreementerNos);
+						hasAgreementers = true;
+					}
+					if (!autoReferencerNos.isEmpty()) {
+						approvalDto.setReferencer_no(autoReferencerNos);
+						hasReferencers = true;
+					}
+				}
+			}
 
 			if (!hasApprovers && !hasAgreementers && !hasReferencers) {
 				throw new IllegalArgumentException("결재자 또는 참조/회람자는 최소 한 명 이상 등록되어야 합니다.");
@@ -865,6 +905,112 @@ public class ApprovalService {
 		}
 		
 		return result;
+	}
+
+	// 양식/부서별 DB 결재선 및 조직도 기반 자동 결재선 통합 조회
+	public List<AutoApprovalLineResponseDto> selectAutoApprovalLineResponse(Long memberNo, Long formNo) {
+		List<AutoApprovalLineResponseDto> resultList = new ArrayList<>();
+		Member drafter = memberRepository.findById(memberNo).orElse(null);
+		if (drafter == null) {
+			return resultList;
+		}
+
+		// 1. DB에 설정된 양식/부서별 결재선 조회
+		ApprovalLine approvalLine = null;
+		if (formNo != null && drafter.getDept() != null) {
+			approvalLine = approvalLineRepository.findByFormNoAndDeptNo(formNo, drafter.getDept().getDeptNo()).orElse(null);
+		}
+		if (approvalLine == null && formNo != null) {
+			approvalLine = approvalLineRepository.findByFormNoAndDeptIsNull(formNo).orElse(null);
+		}
+
+		if (approvalLine != null) {
+			List<ApprovalLineDetail> details = approvalLineDetailRepository
+					.findAllByApprovalLine_LineIdOrderByApprOrderAsc(approvalLine.getLineId());
+			int approverOrder = 1;
+			for (ApprovalLineDetail detail : details) {
+				Member m = detail.getMember();
+				// 기안자 본인이 결재선 목록에 존재할 경우 본인 셀프 결재 방지를 위해 자동 제외
+				if (m != null && m.getStatus() != 3 && !m.getMemberNo().equals(memberNo)) {
+					String type = detail.getApprType() != null ? detail.getApprType() : "APPROVER";
+					int order = "APPROVER".equals(type) ? approverOrder++ : detail.getApprOrder();
+
+					resultList.add(AutoApprovalLineResponseDto.builder()
+							.member_no(m.getMemberNo())
+							.member_name(m.getMemberName())
+							.dept_name(m.getDept() != null ? m.getDept().getDeptName() : "")
+							.pos_name(m.getPos() != null ? m.getPos().getPosName() : "")
+							.appr_type(type)
+							.appr_order(order)
+							.build());
+				}
+			}
+			if (!resultList.isEmpty()) {
+				return resultList;
+			}
+		}
+
+		// 2. DB 결재선이 없을 시 조직도 기반 상급자 추산
+		List<MemberDto> orgLine = selectAutoApprovalLine(memberNo);
+		int order = 1;
+		for (MemberDto mDto : orgLine) {
+			resultList.add(AutoApprovalLineResponseDto.builder()
+					.member_no(mDto.getMember_no())
+					.member_name(mDto.getMember_name())
+					.dept_name(mDto.getDept_name())
+					.pos_name(mDto.getPos_name())
+					.appr_type("APPROVER")
+					.appr_order(order++)
+					.build());
+		}
+
+		return resultList;
+	}
+
+	// 기존 조직도 기반 상급자 추산 메서드
+	public List<MemberDto> selectAutoApprovalLine(Long memberNo) {
+		List<MemberDto> autoLine = new ArrayList<>();
+		Member drafter = memberRepository.findById(memberNo).orElse(null);
+		if (drafter == null || drafter.getDept() == null) {
+			return autoLine;
+		}
+
+		Set<Long> addedMemberNos = new HashSet<>();
+		addedMemberNos.add(drafter.getMemberNo()); // 기안자 본인 제외
+
+		com.mjc.groupware.dept.entity.Dept currentDept = drafter.getDept();
+
+		while (currentDept != null && autoLine.size() < 5) {
+			Member deptHead = currentDept.getMember();
+			boolean headAdded = false;
+
+			if (deptHead != null && deptHead.getStatus() != 3 && !addedMemberNos.contains(deptHead.getMemberNo())) {
+				addedMemberNos.add(deptHead.getMemberNo());
+				autoLine.add(new MemberDto().toDto(deptHead));
+				headAdded = true;
+			}
+
+			if (!headAdded) {
+				List<Member> deptMembers = memberRepository.findAllByDeptNoSortedByPosOrder(currentDept.getDeptNo());
+				if (deptMembers != null) {
+					for (Member m : deptMembers) {
+						if (m.getStatus() != 3 && !addedMemberNos.contains(m.getMemberNo())) {
+							if (drafter.getPos() == null || m.getPos() == null || 
+								(m.getPos().getPosOrder() != null && drafter.getPos().getPosOrder() != null && 
+								 m.getPos().getPosOrder() < drafter.getPos().getPosOrder())) {
+								addedMemberNos.add(m.getMemberNo());
+								autoLine.add(new MemberDto().toDto(m));
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			currentDept = currentDept.getParentDept();
+		}
+
+		return autoLine;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.mjc.groupware.approval.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mjc.groupware.approval.dto.ApprovalDto;
 import com.mjc.groupware.approval.dto.ApprovalFormDto;
 import com.mjc.groupware.approval.dto.ApprovalStatusTypeDto;
+import com.mjc.groupware.approval.dto.AutoApprovalLineResponseDto;
 import com.mjc.groupware.approval.dto.PageDto;
 import com.mjc.groupware.approval.dto.SearchDto;
 import com.mjc.groupware.approval.entity.ApprAgreementer;
@@ -551,6 +553,31 @@ public class ApprovalController {
 		}
 
 		return resultMap;
+	}
+	
+	// 조직 및 DB 양식/부서 맞춤 결재 라인 자동 가져오기
+	@GetMapping("/approval/auto-line")
+	@ResponseBody
+	public List<AutoApprovalLineResponseDto> getAutoApprovalLine(
+			@RequestParam(value = "targetMemberNo", required = false) Long targetMemberNo,
+			@RequestParam(value = "formNo", required = false) Long formNo,
+			@AuthenticationPrincipal UserDetails userDetails) {
+		Long memberNo = targetMemberNo;
+		if (memberNo == null && userDetails != null) {
+			String userId = userDetails.getUsername();
+			MemberDto memberDto = new MemberDto();
+			memberDto.setMember_id(userId);
+			Member member = memberService.selectMemberOne(memberDto);
+			if (member != null) {
+				memberNo = member.getMemberNo();
+			}
+		}
+		
+		if (memberNo == null) {
+			return new ArrayList<>();
+		}
+		
+		return service.selectAutoApprovalLineResponse(memberNo, formNo);
 	}
 	
 }

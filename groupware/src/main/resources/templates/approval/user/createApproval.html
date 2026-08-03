@@ -454,6 +454,9 @@
 						// 작성 내용 초기화
 						clearApprovalForm();
 
+						// 조직 및 DB 맞춤 결재선 자동 세팅
+						autoSetApprovalLineDirect();
+
 						// 기안자 정보 삽입
 						/* document.querySelector("td[name='sender_name']").innerText = member.member_name;
 						document.querySelector("td[name='dept_name']").innerText = member.dept_name;
@@ -794,47 +797,57 @@
 		// 결재라인 버튼 클릭시 모달창에 등록한 관련자 정보를 가져옴
 		document.addEventListener('DOMContentLoaded', function () {
 			$('#approvalLineModal').on('shown.bs.modal', function () {
+				const appUl = document.getElementById("approverList");
+				const agrUl = document.getElementById("agreementerList");
+				const refUl = document.getElementById("referencerList");
+
+				if (appUl) appUl.innerHTML = "";
+				if (agrUl) agrUl.innerHTML = "";
+				if (refUl) refUl.innerHTML = "";
 
 				let approverList = document.querySelectorAll("th[name='approver']");
 
 				approverList.forEach(function (member) {
-
-					let text = member.innerText;
-					text = text.split(' ')[1];
+					let text = member.innerText ? member.innerText.trim() : '';
+					if (text.includes(' ')) {
+						text = text.split(' ')[1];
+					}
 					let input = member.querySelector("input[name='approver_no']");
-					if (input) {
+					if (input && text) {
 						let memberNo = input.value;
 						const li = document.createElement("li");
 						li.className = 'list-group-item approver_li';
 						li.innerHTML = `<button class="selected_approver btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${text}`;
-						document.getElementById("approverList").appendChild(li);
+						appUl.appendChild(li);
 					}
 				});
 
 				let agreementerList = document.querySelectorAll("th[name='agreementer']");
 
 				agreementerList.forEach(function (member) {
-					let text = member.innerText;
+					let text = member.innerText ? member.innerText.trim() : '';
 					let input = member.querySelector("input[name='agreementer_no']");
-					if (input) {
+					if (input && text) {
 						let memberNo = input.value;
 						const li = document.createElement("li");
 						li.className = 'list-group-item agreementer_li';
 						li.innerHTML = `<button class="selected_agreementer btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${text}`;
-						document.getElementById("agreementerList").appendChild(li);
+						agrUl.appendChild(li);
 					}
 				});
 
 				let referencerList = document.querySelectorAll("span[name='referencerSpan']");
 
 				referencerList.forEach(function (member) {
-					let text = member.innerText;
-					let memberNo = member.querySelector("input[name='referencer_no']").value;
-
-					const li = document.createElement("li");
-					li.className = 'list-group-item referencer_li';
-					li.innerHTML = `<button class="selected_referencer btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${text}`;
-					document.getElementById("referencerList").appendChild(li);
+					let text = member.innerText ? member.innerText.trim() : '';
+					let input = member.querySelector("input[name='referencer_no']");
+					if (input && text) {
+						let memberNo = input.value;
+						const li = document.createElement("li");
+						li.className = 'list-group-item referencer_li';
+						li.innerHTML = `<button class="selected_referencer btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${text}`;
+						refUl.appendChild(li);
+					}
 				});
 			});
 
@@ -842,11 +855,11 @@
 			$('#approvalLineModal').on('hidden.bs.modal', function () {
 
 				const list = document.getElementById("memberList");
-				list.innerHTML = ""; // 기존 목록 초기화
+				if (list) list.innerHTML = ""; // 기존 목록 초기화
 
-				document.getElementById("approverList").innerHTML = "";
-				document.getElementById("agreementerList").innerHTML = "";
-				document.getElementById("referencerList").innerHTML = "";
+				if (document.getElementById("approverList")) document.getElementById("approverList").innerHTML = "";
+				if (document.getElementById("agreementerList")) document.getElementById("agreementerList").innerHTML = "";
+				if (document.getElementById("referencerList")) document.getElementById("referencerList").innerHTML = "";
 			});
 
 		})
@@ -1127,8 +1140,78 @@
 			});
 
 			// 모달 닫기
-			bootstrap.Modal.getInstance(document.getElementById("approvalLineModal")).hide();
+			const modalEl = document.getElementById("approvalLineModal");
+			if (modalEl && bootstrap.Modal.getInstance(modalEl)) {
+				bootstrap.Modal.getInstance(modalEl).hide();
+			}
 		};
+
+		// DB 및 조직 맞춤 결재선 세팅 (본문 폼)
+		function autoSetApprovalLineDirect() {
+			let targetMemberNo = "";
+			const isProxyCheck = document.getElementById('is_proxy_check');
+			const targetSelect = document.getElementById('proxy_target_select');
+
+			if (isProxyCheck && isProxyCheck.checked && targetSelect && targetSelect.value) {
+				targetMemberNo = targetSelect.value;
+			}
+
+			const formNoInput = document.getElementById('approval_type_no');
+			let formNo = formNoInput ? formNoInput.value : "";
+
+			let url = '/approval/auto-line?';
+			if (targetMemberNo) url += 'targetMemberNo=' + targetMemberNo + '&';
+			if (formNo) url += 'formNo=' + formNo;
+
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					const approverUl = document.getElementById("approverList");
+					const agreementerUl = document.getElementById("agreementerList");
+					const referencerUl = document.getElementById("referencerList");
+
+					if (approverUl) approverUl.innerHTML = "";
+					if (agreementerUl) agreementerUl.innerHTML = "";
+					if (referencerUl) referencerUl.innerHTML = "";
+
+					if (!data || data.length === 0) {
+						selectApprovalMember();
+						return;
+					}
+
+					data.forEach(item => {
+						const memberNo = item.member_no;
+						const memberName = item.member_name;
+						const apprType = item.appr_type || 'APPROVER';
+
+						if (apprType === 'AGREEMENTER' && agreementerUl) {
+							const li = document.createElement("li");
+							li.className = 'list-group-item agreementer_li';
+							li.innerHTML = `<button class="selected_agreementer btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${memberName}`;
+							agreementerUl.appendChild(li);
+						} else if (apprType === 'REFERENCER' && referencerUl) {
+							const li = document.createElement("li");
+							li.className = 'list-group-item referencer_li';
+							li.innerHTML = `<button class="selected_referencer btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${memberName}`;
+							referencerUl.appendChild(li);
+						} else if (approverUl) {
+							const li = document.createElement("li");
+							li.className = 'list-group-item approver_li';
+							li.innerHTML = `<button class="selected_approver btn-sm btn btn-rounded btn-light" value="${memberNo}">-</button> ${memberName}`;
+							approverUl.appendChild(li);
+						}
+					});
+
+					selectApprovalMember();
+				})
+				.catch(err => {
+					console.error("자동 결재 라인 세팅 실패:", err);
+				});
+		}
+
+		function autoSetApprovalLineInModal() {
+			autoSetApprovalLineDirect();
+		}
 
 
 		// 승인요청 버튼 클릭 시 결재 생성
