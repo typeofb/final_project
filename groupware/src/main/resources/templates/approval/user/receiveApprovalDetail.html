@@ -25,6 +25,26 @@
 #approval-content th {
   word-break: break-word;
 }
+
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .left-sidebar, .app-header, nav, .breadcrumb, .user-profile-tab, .no-print, .btn, .modal, footer {
+    display: none !important;
+  }
+  .page-wrapper, .body-wrapper, .container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
 </style>
 	<!-- jQuery -->
 	<script th:src="@{/js/jquery-3.7.1.js}"></script>
@@ -81,9 +101,15 @@
 					th:value="${approval.apprNo}">
 				<h4 id="approval_form_name" class="fw-bold text-center mb-4"
 					th:text="${approval.approvalForm.approvalFormName}">양식 제목</h4>
-				<div class="text-end" style="min-width: 180px;">
-					작성일 : <span id="reg_date"
-						th:text="${#temporals.format(approval.apprRegDate,'yyyy.MM.dd HH:mm')}"></span>
+				<div class="d-flex justify-content-between align-items-center mb-3" style="min-width: 180px;">
+					<div></div>
+					<div class="text-end">
+						<button type="button" class="btn btn-sm btn-outline-primary me-2 no-print" onclick="window.print()">
+							<i class="ti ti-printer me-1"></i>문서 다운로드 (PDF / 인쇄)
+						</button>
+						작성일 : <span id="reg_date"
+							th:text="${#temporals.format(approval.apprRegDate,'yyyy.MM.dd HH:mm')}"></span>
+					</div>
 				</div>
 				<table class="table table-bordered align-middle">
 					<tbody>
