@@ -91,11 +91,11 @@ table select:focus {
 }
 
 .table th:nth-child(2), .table td:nth-child(2) {
-	min-width: 160px;
+	min-width: 120px;
 }
 
 .table th:nth-child(3), .table td:nth-child(3) {
-	min-width: 160px;
+	min-width: 120px;
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
@@ -103,7 +103,7 @@ table select:focus {
 }
 
 .table th:nth-child(5), .table td:nth-child(5) {
-	min-width: 140px;
+	min-width: 120px;
 }
 
 .table th:nth-child(6), .table td:nth-child(6) {
@@ -111,7 +111,7 @@ table select:focus {
 }
 
 .table th:nth-child(7), .table td:nth-child(7) {
-	min-width: 80px;
+	min-width: 120px;
 }
 
 #chkUpdateBtn {

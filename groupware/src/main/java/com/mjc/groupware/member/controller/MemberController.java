@@ -1002,4 +1002,38 @@ public class MemberController {
 		return resultMap;
 	 }
 	
+
+	@CheckPermission("MEMBER_ADMIN_RU")
+	@PostMapping("/admin/member/reset-password")
+	@ResponseBody
+	public Map<String, String> resetMemberPasswordApi(@RequestBody Map<String, Object> paramMap) {
+		Map<String, String> resultMap = new HashMap<>();
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "비밀번호 초기화 중 오류가 발생했습니다.");
+		
+		try {
+			if (paramMap.get("member_no") == null) {
+				resultMap.put("res_code", "400");
+				resultMap.put("res_msg", "사원 번호가 유효하지 않습니다.");
+				return resultMap;
+			}
+			
+			Long memberNo = Long.parseLong(paramMap.get("member_no").toString());
+			String newPassword = paramMap.get("new_password") != null ? paramMap.get("new_password").toString() : "1234";
+			
+			service.adminResetMemberPassword(memberNo, newPassword);
+			
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "비밀번호가 성공적으로 초기화되었습니다. (초기 비밀번호: " + newPassword + ")");
+		} catch(IllegalArgumentException e) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", e.getMessage());
+		} catch(Exception e) {
+			logger.error("관리자 비밀번호 초기화 오류", e);
+			resultMap.put("res_code", "500");
+			resultMap.put("res_msg", "비밀번호 초기화 처리 중 오류가 발생했습니다.");
+		}
+		
+		return resultMap;
+	}
 }

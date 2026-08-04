@@ -384,4 +384,27 @@ public class MemberService {
 		return resultList;
 	}
 
+
+	@Transactional(rollbackFor = Exception.class)
+	public void adminResetMemberPassword(Long memberNo, String newPassword) {
+		try {
+			Member target = repository.findById(memberNo)
+				.orElseThrow(() -> new IllegalArgumentException("해당 사원을 찾을 수 없습니다."));
+			
+			if (newPassword == null || newPassword.trim().isEmpty()) {
+				newPassword = "1234";
+			}
+			
+			target.changePassword(passwordEncoder.encode(newPassword));
+			repository.save(target);
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			String sql = "DELETE FROM persistent_logins WHERE username = ?";
+			jdbcTemplate.update(sql, target.getMemberId());
+		} catch(IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		} catch(Exception e) {
+			throw new RuntimeException("비밀번호 초기화 중 오류가 발생했습니다.");
+		}
+	}
 }

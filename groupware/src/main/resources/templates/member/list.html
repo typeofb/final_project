@@ -114,6 +114,9 @@ layout:decorate="~{include/layout :: layout}">
 							                      <th>
 							                        <h6 class="fs-4 fw-semibold mb-0">상태</h6>
 							                      </th>
+							                      <th>
+							                        <h6 class="fs-4 fw-semibold mb-0">비밀번호 관리</h6>
+							                      </th>
 							                    </tr>
 							                  </thead>
 							                  <tbody id="member-tbody">
@@ -178,6 +181,9 @@ layout:decorate="~{include/layout :: layout}">
 							                      <th>
 							                        <h6 class="fs-4 fw-semibold mb-0">상태</h6>
 							                      </th>
+							                      <th>
+							                        <h6 class="fs-4 fw-semibold mb-0">비밀번호 관리</h6>
+							                      </th>
 							                    </tr>
 							                  </thead>
 							                  <tbody id="member-tbody">
@@ -236,6 +242,11 @@ layout:decorate="~{include/layout :: layout}">
 																	th:selected="${status.status_no == member.status}">
 															</option>
 														</select>
+													</td>
+													<td>
+														<button type="button" class="btn btn-sm btn-outline-warning text-nowrap" th:onclick="resetMemberPassword([[${member.memberNo}]], [[${member.memberName}]])">
+															<i class="ti ti-key me-1"></i>비밀번호 초기화
+														</button>
 													</td>
 											  	</tr>
 											  	<tr th:if="${memberList == null}">
@@ -681,6 +692,43 @@ layout:decorate="~{include/layout :: layout}">
   	<!-- jsTree -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	<script th:src="@{/js/cjs/jstree.js}"></script>
+
+
+	<script>
+	function resetMemberPassword(memberNo, memberName) {
+		const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+		const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+		
+		const inputPw = prompt('[' + memberName + '] 사원의 비밀번호를 초기화합니다.\n신규 설정할 비밀번호를 입력해 주세요.', '1234');
+		if (inputPw === null) {
+			return;
+		}
+		
+		const resetPw = inputPw.trim() !== '' ? inputPw.trim() : '1234';
+		
+		const headers = { 'Content-Type': 'application/json' };
+		if (csrfHeader && csrfToken) {
+			headers[csrfHeader] = csrfToken;
+		}
+		
+		fetch('/admin/member/reset-password', {
+			method: 'POST',
+			headers: headers,
+			body: JSON.stringify({
+				member_no: memberNo,
+				new_password: resetPw
+			})
+		})
+		.then(response => response.json())
+		.then(data => {
+			alert(data.res_msg);
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			alert('비밀번호 초기화 처리 중 오류가 발생했습니다.');
+		});
+	}
+	</script>
 
 </th:block>
 </html>
