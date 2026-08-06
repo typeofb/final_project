@@ -280,8 +280,7 @@
               		  <!-- 접근 :: 결재담당자, 최고관리자 -->
                	 	  <!-- ============================= -->
 		              
-		              <th:block th:each="funcNo : ${accessibleFuncNoList}">
-		      		  	<th:block th:if="${funcNo == 16}">
+		              <th:block th:if="${accessibleFuncNoList.contains(16L) or accessibleFuncNoList.contains(37L)}">
 		      		  		<li class="sidebar-item">
 					        	<a class="sidebar-link inner-sidebar-item" href="javascript:void(0)" aria-expanded="false">
 					            	<span class="rounded-3">
@@ -290,15 +289,28 @@
 					                <span class="hide-menu">관리 : 결재</span>
 					           	</a>
 					           	<ul aria-expanded="false" class="collapse second-level">
-							    	<li class="sidebar-item">
-					                    <a th:href="@{/admin/approval}" class="sidebar-link inner-sidebar-item">
-					                      <i class="ti ti-file-text"></i>
-					                      <span class="hide-menu">결재관리</span>
-					                    </a>
-				                  	</li>
+					           		<th:block th:each="funcNo : ${accessibleFuncNoList}">
+					           			<th:block th:if="${funcNo == 16}">
+									    	<li class="sidebar-item">
+							                    <a th:href="@{/admin/approval}" class="sidebar-link inner-sidebar-item">
+							                      <i class="ti ti-file-text"></i>
+							                      <span class="hide-menu">결재 양식 관리</span>
+							                    </a>
+						                  	</li>
+					           			</th:block>
+					           		</th:block>
+					           		<th:block th:each="funcNo : ${accessibleFuncNoList}">
+					           			<th:block th:if="${funcNo == 37}">
+									    	<li class="sidebar-item">
+							                    <a th:href="@{/admin/approval/list}" class="sidebar-link inner-sidebar-item">
+							                      <i class="ti ti-files"></i>
+							                      <span class="hide-menu">전체 결재 관리</span>
+							                    </a>
+						                  	</li>
+					           			</th:block>
+					           		</th:block>
 								</ul>
 				        	</li>
-		      		  	</th:block>
 		      		  </th:block>
 		              
 		              <!-- ============================= -->

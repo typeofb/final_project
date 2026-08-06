@@ -40,6 +40,17 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
   	<div class="preloader">
     	<img th:src="@{/assets/images/logos/preloader.svg}" alt="loader" class="lds-ripple img-fluid" />
   	</div>
+	<script>
+		(function () {
+			function hidePreloader() {
+				var p = document.querySelector('.preloader');
+				if (p) p.style.display = 'none';
+			}
+			document.addEventListener('DOMContentLoaded', hidePreloader);
+			window.addEventListener('load', hidePreloader);
+			setTimeout(hidePreloader, 800);
+		})();
+	</script>
   	<!-- Preloader End -->
 	
   	<div class="page-wrapper" style="position: fixed; top: 0; width: 100%; z-index: 10; height: 45px;">

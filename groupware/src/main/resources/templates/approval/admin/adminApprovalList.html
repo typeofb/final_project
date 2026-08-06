@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{include/layout :: layout}">
+
+<th:block layout:fragment="content">
+	<!-- jQuery -->
+	<script th:src="@{/js/jquery-3.7.1.js}"></script>
+	<link th:href="@{/css/jji.css}" rel="stylesheet">
+
+	<style>
+		.card-clickable {
+			cursor: pointer;
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.card-clickable:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+		}
+
+		.active-card {
+			border: 2px solid #5d87ff !important;
+		}
+
+		.approval-row {
+			cursor: pointer;
+		}
+
+		.approval-row:hover {
+			background-color: #f8f9fa;
+		}
+	</style>
+
+	<div class="container-fluid px-4">
+		<!-- Breadcrumb -->
+		<div class="col-lg-8 col-md-6 col-12 align-self-center">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb align-items-center">
+					<li class="breadcrumb-item"><a class="text-muted text-decoration-none" th:href="@{/home}"> <i
+								class="ti ti-home fs-5"></i>
+						</a></li>
+					<li class="breadcrumb-item" aria-current="page">결재 관리</li>
+					<li class="breadcrumb-item active" aria-current="page">전체 결재 관리</li>
+				</ol>
+			</nav>
+			<br>
+			<h2 class="mb-0 fw-bolder fs-8">전체 결재 관리</h2>
+		</div>
+		<br>
+
+		<!-- Summary Status Cards -->
+		<div class="row g-3 text-center mb-4">
+			<div class="col-md">
+				<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable" id="card-status-all"
+					style="background-color:#F4F6F9;">
+					<input type="hidden" name="search_status" value="">
+					<div class="fw-semibold mt-1 text-secondary">전체 결재 건</div>
+					<div class="fs-4 fw-bold mt-1 text-dark" th:text="${approvalStatusTypeDto.count_Total}">0</div>
+				</div>
+			</div>
+			<!-- <div class="col-md">
+				<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable" id="card-status-A" style="background-color:#FFF4E5;">
+					<input type="hidden" name="search_status" value="A">
+					<div class="fw-semibold mt-1 text-warning">합의 대기 중</div>
+					<div class="fs-4 fw-bold mt-1 text-warning"
+						th:text="${approvalStatusTypeDto.count_A}">0</div>
+				</div>
+			</div> -->
+			<div class="col-md">
+				<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable" id="card-status-D"
+					style="background-color:#E6F4FF;">
+					<input type="hidden" name="search_status" value="D">
+					<div class="fw-semibold mt-1 text-info">결재 진행 중</div>
+					<div class="fs-4 fw-bold mt-1 text-info" th:text="${approvalStatusTypeDto.count_D}">0</div>
+				</div>
+			</div>
+			<div class="col-md">
+				<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable" id="card-status-C"
+					style="background-color:#EBFAF2;">
+					<input type="hidden" name="search_status" value="C">
+					<div class="fw-semibold mt-1 text-success">승인 완료</div>
+					<div class="fs-4 fw-bold mt-1 text-success" th:text="${approvalStatusTypeDto.count_C}">0</div>
+				</div>
+			</div>
+			<div class="col-md">
+				<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable" id="card-status-R"
+					style="background-color:#FDF3F5;">
+					<input type="hidden" name="search_status" value="R">
+					<div class="fw-semibold mt-1 text-danger">결재 반려</div>
+					<div class="fs-4 fw-bold mt-1 text-danger" th:text="${approvalStatusTypeDto.count_R}">0</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Search Bar & Filters -->
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<form class="d-flex align-items-center gap-2 flex-wrap" name="search_form"
+				th:action="@{/admin/approval/list}" method="get" id="searchForm">
+				<input type="hidden" name="search_status" id="search_status_input"
+					th:value="${searchDto.search_status}">
+
+				<select name="search_type" class="form-select w-auto bg-primary-subtle border-0"
+					style="min-width: 130px;">
+					<option th:value="''" th:selected="${searchDto.search_type == null or searchDto.search_type == ''}">
+						전체 검색</option>
+					<option th:value="appr_title" th:selected="${searchDto.search_type == 'appr_title'}">제목</option>
+					<option th:value="member_name" th:selected="${searchDto.search_type == 'member_name'}">기안자</option>
+					<option th:value="approval_form_name"
+						th:selected="${searchDto.search_type == 'approval_form_name'}">양식 종류</option>
+				</select>
+
+				<div class="position-relative" style="min-width: 280px;">
+					<input type="text" name="search_text" th:value="${searchDto.search_text}"
+						class="form-control search-chat py-2 ps-5" id="text-srh" placeholder="검색어를 입력하세요">
+					<button type="submit"
+						class="btn position-absolute top-50 start-0 translate-middle-y bg-transparent border-0 p-0 ms-3">
+						<i class="ti ti-search fs-6 text-dark"></i>
+					</button>
+				</div>
+
+				<div class="sort">
+					<select id="order_type" name="order_type" class="form-select w-auto bg-primary-subtle border-0"
+						onchange="document.getElementById('searchForm').submit();">
+						<option value="1" th:selected="${searchDto.order_type == 1}">최신순</option>
+						<option value="2" th:selected="${searchDto.order_type == 2}">오래된순</option>
+					</select>
+				</div>
+			</form>
+		</div>
+
+		<!-- Approval Table -->
+		<div class="table-wrapper p-4 bg-white rounded-4 shadow-sm mb-4">
+			<div class="table-responsive">
+				<table class="table align-middle text-center">
+					<thead class="bg-light">
+						<tr>
+							<th style="width: 80px;">문서번호</th>
+							<th style="width: 150px;">양식 종류</th>
+							<th>제목</th>
+							<th style="width: 140px;">기안자</th>
+							<th style="width: 160px;">기안일시</th>
+							<th style="width: 120px;">결재상태</th>
+							<th style="width: 100px;">상세보기</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${approvalList.empty}">
+							<td colspan="7" class="py-4 text-muted">등록되거나 조건에 맞는 결재 건이 존재하지 않습니다.</td>
+						</tr>
+						<tr th:if="${!#lists.isEmpty(approvalList)}"
+							th:each="approval, approvalStatus : ${approvalList}" class="approval-row">
+							<td th:text="${approval.apprNo}">1</td>
+							<td>
+								<span class="badge bg-secondary-subtle text-dark"
+									th:text="${approval.approvalForm.approvalFormName}">양식명</span>
+							</td>
+							<td class="text-start fw-semibold">
+								<a th:href="@{'/approval/send/detail/' + ${approval.apprNo}}"
+									class="text-dark text-decoration-none hover-primary"
+									th:text="${approval.apprTitle}">
+									결재 제목
+								</a>
+							</td>
+							<td>
+								<span th:text="${approval.member.memberName}">기안자</span>
+								<small class="text-muted d-block" th:if="${approval.member.dept != null}"
+									th:text="${approval.member.dept.deptName}">부서</small>
+							</td>
+							<td th:text="${#temporals.format(approval.apprRegDate,'yyyy-MM-dd HH:mm')}">2026-08-05 10:00
+							</td>
+							<td>
+								<!-- <th:block th:if="${approval.apprStatus == 'A'}">
+									<span class="badge bg-warning-subtle text-warning fs-2 px-3 py-2">합의 대기 중</span>
+								</th:block> -->
+								<th:block th:if="${approval.apprStatus == 'D'}">
+									<span class="badge bg-info-subtle text-info fs-2 px-3 py-2">결재 진행 중</span>
+								</th:block>
+								<th:block th:if="${approval.apprStatus == 'C'}">
+									<span class="badge bg-success-subtle text-success fs-2 px-3 py-2">승인 완료</span>
+								</th:block>
+								<th:block th:if="${approval.apprStatus == 'R'}">
+									<span class="badge bg-danger-subtle text-danger fs-2 px-3 py-2">반려</span>
+								</th:block>
+							</td>
+							<td>
+								<a th:href="@{'/approval/send/detail/' + ${approval.apprNo}}"
+									class="btn btn-sm btn-outline-primary rounded-pill px-3">
+									조회
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Pagination -->
+			<th:block th:if="${!(approvalList.empty)}">
+				<div class="d-flex justify-content-center mt-4">
+					<nav aria-label="Page navigation">
+						<ul class="pagination pagination-sm mb-0">
+							<!-- 이전 버튼 -->
+							<li class="page-item" th:if="${pageDto.prev}"
+								th:classappend="${pageDto.prev} ? '' : 'disabled'">
+								<a class="page-link"
+									th:href="@{/admin/approval/list(nowPage=${pageDto.pageBarStart - 1}, search_type=${searchDto.search_type}, search_text=${searchDto.search_text}, search_status=${searchDto.search_status}, order_type=${searchDto.order_type})}">
+									<i class="ti ti-chevron-left"></i>
+								</a>
+							</li>
+							<!-- 페이지 번호 -->
+							<li class="page-item"
+								th:each="num : ${#numbers.sequence(pageDto.pageBarStart, pageDto.pageBarEnd)}"
+								th:classappend="${pageDto.nowPage == num} ? 'active'">
+								<a class="page-link"
+									th:classappend="${pageDto.nowPage == num} ? 'text-bg-primary border-primary text-white'"
+									th:href="@{/admin/approval/list(nowPage=${num}, search_type=${searchDto.search_type}, search_text=${searchDto.search_text}, search_status=${searchDto.search_status}, order_type=${searchDto.order_type})}"
+									th:text="${num}">1</a>
+							</li>
+							<!-- 다음 버튼 -->
+							<li class="page-item" th:if="${pageDto.next}"
+								th:classappend="${pageDto.next} ? '' : 'disabled'">
+								<a class="page-link"
+									th:href="@{/admin/approval/list(nowPage=${pageDto.pageBarEnd + 1}, search_type=${searchDto.search_type}, search_text=${searchDto.search_text}, search_status=${searchDto.search_status}, order_type=${searchDto.order_type})}">
+									<i class="ti ti-chevron-right"></i>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</th:block>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const currentStatus = document.getElementById('search_status_input').value;
+
+			// Highlight initial selected card
+			document.querySelectorAll('.card-clickable').forEach(function (card) {
+				const cardStatus = card.querySelector('input[name="search_status"]').value;
+				if (cardStatus === currentStatus) {
+					card.classList.add('active-card');
+				}
+
+				card.addEventListener('click', function () {
+					const targetStatus = this.querySelector('input[name="search_status"]').value;
+					document.getElementById('search_status_input').value = targetStatus;
+					document.getElementById('searchForm').submit();
+				});
+			});
+		});
+	</script>
+</th:block>
+
+</html>

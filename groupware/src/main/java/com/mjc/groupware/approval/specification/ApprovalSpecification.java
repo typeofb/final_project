@@ -38,4 +38,11 @@ public class ApprovalSpecification {
 	        return criteriaBuilder.equal(memberJoin.get("apprNo"), keyword);
 		};
 	}
+	
+	public static Specification<Approval> approvalMemberNameContains(String keyword) {
+		return (root, query, criteriaBuilder) -> {
+			Join<Object, Object> memberJoin = root.join("member");
+			return criteriaBuilder.like(memberJoin.get("memberName"), "%" + keyword + "%");
+		};
+	}
 }

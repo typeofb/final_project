@@ -29,6 +29,7 @@ import com.mjc.groupware.approval.dto.ApprApproverDto;
 import com.mjc.groupware.approval.dto.ApprReferencerDto;
 import com.mjc.groupware.approval.dto.ApprovalDto;
 import com.mjc.groupware.approval.dto.ApprovalFormDto;
+import com.mjc.groupware.approval.dto.ApprovalStatusTypeDto;
 import com.mjc.groupware.approval.dto.PageDto;
 import com.mjc.groupware.approval.dto.SearchDto;
 import com.mjc.groupware.approval.entity.ApprAgreementer;
@@ -1011,6 +1012,58 @@ public class ApprovalService {
 		}
 
 		return autoLine;
+	}
+
+	// 관리자 : 전사 전체 결재 관리 조회 (페이징, 검색, 상태별 필터링)
+	public Page<Approval> selectApprovalAdminAll(SearchDto searchDto, PageDto pageDto) {
+		Pageable pageable = PageRequest.of(pageDto.getNowPage() - 1, pageDto.getNumPerPage(),
+				Sort.by("apprRegDate").descending());
+		
+		if(searchDto.getOrder_type() == 2) {
+			pageable = PageRequest.of(pageDto.getNowPage() - 1, pageDto.getNumPerPage(),
+					Sort.by("apprRegDate").ascending());
+		}
+		
+		Specification<Approval> spec = Specification.where(null);
+		
+		if(searchDto.getSearch_text() != null && !searchDto.getSearch_text().trim().isEmpty()) {
+			String searchText = searchDto.getSearch_text().trim();
+			if("appr_title".equals(searchDto.getSearch_type())) {
+				spec = spec.and(ApprovalSpecification.approvalTitleContains(searchText));
+			} else if("approval_form_name".equals(searchDto.getSearch_type())) {
+				spec = spec.and(ApprovalSpecification.approvalFormNameContains(searchText));
+			} else if("member_name".equals(searchDto.getSearch_type())) {
+				spec = spec.and(ApprovalSpecification.approvalMemberNameContains(searchText));
+			} else {
+				Specification<Approval> titleSpec = ApprovalSpecification.approvalTitleContains(searchText);
+				Specification<Approval> formSpec = ApprovalSpecification.approvalFormNameContains(searchText);
+				Specification<Approval> memberSpec = ApprovalSpecification.approvalMemberNameContains(searchText);
+				spec = spec.and(titleSpec.or(formSpec).or(memberSpec));
+			}
+		}
+		
+		if(searchDto.getSearch_status() != null && !searchDto.getSearch_status().trim().isEmpty()) {
+			spec = spec.and(ApprovalSpecification.approvalStatusContains(searchDto.getSearch_status().trim()));
+		}
+		
+		return approvalRepository.findAll(spec, pageable);
+	}
+
+	// 관리자 : 전사 전체 결재건의 상태별 건수 통계
+	public ApprovalStatusTypeDto selectApprovalAdminStatusType() {
+		ApprovalStatusTypeDto astd = new ApprovalStatusTypeDto();
+		List<Object[]> counts = approvalRepository.countGroupedByApprStatus();
+		if (counts != null) {
+			for (Object[] row : counts) {
+				String status = (String) row[0];
+				long count = ((Number) row[1]).longValue();
+				if ("A".equals(status)) astd.setCount_A((int) count);
+				else if ("D".equals(status)) astd.setCount_D((int) count);
+				else if ("R".equals(status)) astd.setCount_R((int) count);
+				else if ("C".equals(status)) astd.setCount_C((int) count);
+			}
+		}
+		return astd;
 	}
 
 }

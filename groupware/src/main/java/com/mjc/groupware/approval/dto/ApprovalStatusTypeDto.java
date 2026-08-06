@@ -19,4 +19,8 @@ public class ApprovalStatusTypeDto {
 	private int count_D;
 	private int count_R;
 	private int count_C;
+
+	public int getCount_Total() {
+		return count_A + count_D + count_R + count_C;
+	}
 }

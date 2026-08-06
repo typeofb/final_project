@@ -64,6 +64,34 @@ public class ApprovalController {
 		return "approval/admin/approvalManagement";
 	}
 	
+	// 관리자 : 전사 전체 결재 관리 페이지로 이동
+	@GetMapping("/admin/approval/list")
+	public String approvalAdminListView(Model model, SearchDto searchDto, PageDto pageDto,
+			@AuthenticationPrincipal UserDetails userDetails) {
+		
+		String userId = userDetails.getUsername();
+		MemberDto memberDto = new MemberDto();
+		memberDto.setMember_id(userId);
+		Member entity = memberService.selectMemberOne(memberDto);
+		MemberDto member = new MemberDto().toDto(entity);
+		
+		if(pageDto.getNowPage() == 0) pageDto.setNowPage(1);
+		
+		Page<Approval> approvalList = service.selectApprovalAdminAll(searchDto, pageDto);
+		ApprovalStatusTypeDto astd = service.selectApprovalAdminStatusType();
+		
+		pageDto.setTotalPage(approvalList.getTotalPages());
+		pageDto.setTotalCount((int)approvalList.getTotalElements());
+		
+		model.addAttribute("member", member);
+		model.addAttribute("approvalList", approvalList);
+		model.addAttribute("pageDto", pageDto);
+		model.addAttribute("searchDto", searchDto);
+		model.addAttribute("approvalStatusTypeDto", astd);
+		
+		return "approval/admin/adminApprovalList";
+	}
+	
 	// 결재 양식 생성 페이지로 이동
 	@GetMapping("/admin/approvalForm/create")
 	public String createApprovalAdminView() {
