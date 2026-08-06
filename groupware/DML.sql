@@ -197,77 +197,70 @@ CREATE TABLE IF NOT EXISTS approval_line_detail (
     FOREIGN KEY (member_no) REFERENCES member(member_no)
 );
 
--- 전사 공통 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사)
+-- 전사 공통 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (1, 1, NULL, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (1, 1, NULL, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (1, 3, 'APPROVER', 1),
-       (1, 2, 'APPROVER', 2)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (1, 2, 'APPROVER', 2),
+       (1, 12, 'REFERENCER', 1);
 
--- [영업부 (dept_no = 2)] 일일업무일지 (1차: 이호창 이사, 2차: 양인수 전무이사, 3차: 양철수 대표이사)
+-- [영업부 (dept_no = 2)] 일일업무일지 (1차: 이호창 이사, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (2, 1, 2, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (2, 1, 2, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (2, 4, 'APPROVER', 1),
        (2, 3, 'APPROVER', 2),
-       (2, 2, 'APPROVER', 3)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (2, 2, 'APPROVER', 3),
+       (2, 12, 'REFERENCER', 1);
 
--- [품질부 (dept_no = 3)] 일일업무일지 (1차: 강근식 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사)
+-- [품질부 (dept_no = 3)] 일일업무일지 (1차: 강근식 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (3, 1, 3, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (3, 1, 3, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (3, 5, 'APPROVER', 1),
        (3, 3, 'APPROVER', 2),
-       (3, 2, 'APPROVER', 3)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (3, 2, 'APPROVER', 3),
+       (3, 12, 'REFERENCER', 1);
 
--- [개발부 (dept_no = 4)] 일일업무일지 (1차: 최광훈 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사)
+-- [개발부 (dept_no = 4)] 일일업무일지 (1차: 최광훈 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (4, 1, 4, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (4, 1, 4, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (4, 6, 'APPROVER', 1),
        (4, 3, 'APPROVER', 2),
-       (4, 2, 'APPROVER', 3)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (4, 2, 'APPROVER', 3),
+       (4, 12, 'REFERENCER', 1);
 
--- [기술부 (dept_no = 5)] 일일업무일지 (1차: 정대창 차장, 2차: 양인수 전무이사, 3차: 양철수 대표이사)
+-- [기술부 (dept_no = 5)] 일일업무일지 (1차: 정대창 차장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (5, 1, 5, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (5, 1, 5, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (5, 7, 'APPROVER', 1),
        (5, 3, 'APPROVER', 2),
-       (5, 2, 'APPROVER', 3)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (5, 2, 'APPROVER', 3),
+       (5, 12, 'REFERENCER', 1);
 
--- [해석부 (dept_no = 6)] 일일업무일지 (1차: 안나영 과장, 2차: 양인수 전무이사, 3차: 양철수 대표이사)
+-- [해석부 (dept_no = 6)] 일일업무일지 (1차: 안나영 과장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (6, 1, 6, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (6, 1, 6, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (6, 14, 'APPROVER', 1),
        (6, 3, 'APPROVER', 2),
-       (6, 2, 'APPROVER', 3)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (6, 2, 'APPROVER', 3),
+       (6, 12, 'REFERENCER', 1);
 
--- [연구소 (dept_no = 7)] 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사)
+-- [연구소 (dept_no = 7)] 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (7, 1, 7, '일일업무일지', 'Y')
-ON DUPLICATE KEY UPDATE line_name = VALUES(line_name);
+VALUES (7, 1, 7, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
 VALUES (7, 3, 'APPROVER', 1),
-       (7, 2, 'APPROVER', 2)
-ON DUPLICATE KEY UPDATE appr_type = VALUES(appr_type);
+       (7, 2, 'APPROVER', 2),
+       (7, 12, 'REFERENCER', 1);
