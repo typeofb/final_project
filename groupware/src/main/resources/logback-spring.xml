@@ -11,8 +11,8 @@
 	<property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>    
 	<property name="FILE_LOG_CHARSET" value="${FILE_LOG_CHARSET:-default}"/>
  	
- 	<property name="LOG_PATH" value="/home/mjc/app/log/"/>
- 	<property name="LOG_FILE_NAME" value="log"/>
+ 	<property name="LOG_PATH" value="${user.home}/logs/"/>
+ 	<property name="LOG_FILE_NAME" value="groupware"/>
  
 	<!-- 콘솔에 로그 출력 세팅 -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
