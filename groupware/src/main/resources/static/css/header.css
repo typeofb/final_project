@@ -1,5 +1,22 @@
 @charset "UTF-8";
 
+/* 테마별 로고 표출 제어 (dark-logo / light-logo 동시 표출 방지) */
+html[data-bs-theme="dark"] .dark-logo {
+	display: none !important;
+}
+html[data-bs-theme="dark"] .light-logo {
+	display: inline-block !important;
+}
+
+html[data-bs-theme="light"] .dark-logo,
+:root:not([data-bs-theme="dark"]) .dark-logo {
+	display: inline-block !important;
+}
+html[data-bs-theme="light"] .light-logo,
+:root:not([data-bs-theme="dark"]) .light-logo {
+	display: none !important;
+}
+
 .logout-button:hover {
 	background-color: #f0f8ff;
 	color: #003366;
