@@ -140,26 +140,26 @@
 							<th style="width: 140px;">기안자</th>
 							<th style="width: 160px;">기안일시</th>
 							<th style="width: 120px;">결재상태</th>
-							<th style="width: 100px;">상세보기</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:if="${approvalList.empty}">
-							<td colspan="7" class="py-4 text-muted">등록되거나 조건에 맞는 결재 건이 존재하지 않습니다.</td>
+							<td colspan="6" class="py-4 text-muted">등록되거나 조건에 맞는 결재 건이 존재하지 않습니다.</td>
 						</tr>
 						<tr th:if="${!#lists.isEmpty(approvalList)}"
-							th:each="approval, approvalStatus : ${approvalList}" class="approval-row">
+							th:each="approval, approvalStatus : ${approvalList}" 
+							class="approval-row"
+							th:onclick="|location.href='@{/approval/send/detail/}${approval.apprNo}'|">
 							<td th:text="${approval.apprNo}">1</td>
 							<td>
 								<span class="badge bg-secondary-subtle text-dark"
 									th:text="${approval.approvalForm.approvalFormName}">양식명</span>
 							</td>
 							<td class="text-start fw-semibold">
-								<a th:href="@{'/approval/send/detail/' + ${approval.apprNo}}"
-									class="text-dark text-decoration-none hover-primary"
+								<span class="text-dark text-decoration-none hover-primary"
 									th:text="${approval.apprTitle}">
 									결재 제목
-								</a>
+								</span>
 							</td>
 							<td>
 								<span th:text="${approval.member.memberName}">기안자</span>
@@ -181,12 +181,6 @@
 								<th:block th:if="${approval.apprStatus == 'R'}">
 									<span class="badge bg-danger-subtle text-danger fs-2 px-3 py-2">반려</span>
 								</th:block>
-							</td>
-							<td>
-								<a th:href="@{'/approval/send/detail/' + ${approval.apprNo}}"
-									class="btn btn-sm btn-outline-primary rounded-pill px-3">
-									조회
-								</a>
 							</td>
 						</tr>
 					</tbody>
