@@ -45,4 +45,27 @@ public class ApprovalSpecification {
 			return criteriaBuilder.like(memberJoin.get("memberName"), "%" + keyword + "%");
 		};
 	}
+
+	public static Specification<Approval> approvalRegDateBetween(String startDateStr, String endDateStr) {
+		return (root, query, criteriaBuilder) -> {
+			if ((startDateStr == null || startDateStr.trim().isEmpty()) && (endDateStr == null || endDateStr.trim().isEmpty())) {
+				return null;
+			}
+			try {
+				if (startDateStr != null && !startDateStr.trim().isEmpty() && endDateStr != null && !endDateStr.trim().isEmpty()) {
+					java.time.LocalDateTime start = java.time.LocalDate.parse(startDateStr.trim()).atStartOfDay();
+					java.time.LocalDateTime end = java.time.LocalDate.parse(endDateStr.trim()).atTime(java.time.LocalTime.MAX);
+					return criteriaBuilder.between(root.get("apprRegDate"), start, end);
+				} else if (startDateStr != null && !startDateStr.trim().isEmpty()) {
+					java.time.LocalDateTime start = java.time.LocalDate.parse(startDateStr.trim()).atStartOfDay();
+					return criteriaBuilder.greaterThanOrEqualTo(root.get("apprRegDate"), start);
+				} else {
+					java.time.LocalDateTime end = java.time.LocalDate.parse(endDateStr.trim()).atTime(java.time.LocalTime.MAX);
+					return criteriaBuilder.lessThanOrEqualTo(root.get("apprRegDate"), end);
+				}
+			} catch (Exception e) {
+				return null;
+			}
+		};
+	}
 }

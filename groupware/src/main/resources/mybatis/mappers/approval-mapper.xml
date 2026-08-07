@@ -55,6 +55,12 @@
 			<if test="search_status != null and search_status != ''">
 		        AND AA.relationship = #{search_status}
 		    </if>
+			<if test="start_date != null and start_date != ''">
+				AND AA.appr_reg_date &gt;= CONCAT(#{start_date}, ' 00:00:00')
+			</if>
+			<if test="end_date != null and end_date != ''">
+				AND AA.appr_reg_date &lt;= CONCAT(#{end_date}, ' 23:59:59')
+			</if>
 		</where>
 		<choose>
 		  <when test="order_type == 1">

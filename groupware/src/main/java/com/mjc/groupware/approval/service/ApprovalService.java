@@ -341,7 +341,10 @@ public class ApprovalService {
 						.and(ApprovalSpecification.approvalSenderContains(member.getMember_no()));
 			}
 		}
-		
+		Specification<Approval> dateSpec = ApprovalSpecification.approvalRegDateBetween(searchDto.getStart_date(), searchDto.getEnd_date());
+		if (dateSpec != null) {
+			spec = spec.and(dateSpec);
+		}
 		
 		Page<Approval> list = approvalRepository.findAll(spec, pageable);
 		
@@ -369,6 +372,8 @@ public class ApprovalService {
 		paramMap.put("search_text", searchDto.getSearch_text());
 		paramMap.put("order_type", searchDto.getOrder_type());
 		paramMap.put("search_status", searchDto.getSearch_status());
+		paramMap.put("start_date", searchDto.getStart_date());
+		paramMap.put("end_date", searchDto.getEnd_date());
 		
 		approvalVoList = approvalMapper.selectApprovalAllByMemberNo(paramMap);
 
@@ -1044,6 +1049,11 @@ public class ApprovalService {
 		
 		if(searchDto.getSearch_status() != null && !searchDto.getSearch_status().trim().isEmpty()) {
 			spec = spec.and(ApprovalSpecification.approvalStatusContains(searchDto.getSearch_status().trim()));
+		}
+		
+		Specification<Approval> dateSpec = ApprovalSpecification.approvalRegDateBetween(searchDto.getStart_date(), searchDto.getEnd_date());
+		if (dateSpec != null) {
+			spec = spec.and(dateSpec);
 		}
 		
 		return approvalRepository.findAll(spec, pageable);

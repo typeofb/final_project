@@ -75,6 +75,71 @@
 		</div>
 		
 		<script>
+		function formatDateStr(date) {
+			const yyyy = date.getFullYear();
+			const mm = String(date.getMonth() + 1).padStart(2, '0');
+			const dd = String(date.getDate()).padStart(2, '0');
+			return `${yyyy}-${mm}-${dd}`;
+		}
+
+		function handleDateRangePresetChange(selectEl) {
+			const val = selectEl.value;
+			const form = selectEl.closest('form');
+			if (!form) return;
+			const startDateInput = form.querySelector('input[name="start_date"]');
+			const endDateInput = form.querySelector('input[name="end_date"]');
+			if (!startDateInput || !endDateInput) return;
+
+			const today = new Date();
+
+			if (val === 'ALL') {
+				startDateInput.value = '';
+				endDateInput.value = '';
+			} else if (val === 'TODAY') {
+				const todayStr = formatDateStr(today);
+				startDateInput.value = todayStr;
+				endDateInput.value = todayStr;
+			} else if (val === 'YESTERDAY') {
+				const yesterday = new Date(today);
+				yesterday.setDate(yesterday.getDate() - 1);
+				const yesterdayStr = formatDateStr(yesterday);
+				startDateInput.value = yesterdayStr;
+				endDateInput.value = yesterdayStr;
+			} else if (val === 'WEEK') {
+				const weekAgo = new Date(today);
+				weekAgo.setDate(weekAgo.getDate() - 7);
+				startDateInput.value = formatDateStr(weekAgo);
+				endDateInput.value = formatDateStr(today);
+			} else if (val === 'MONTH_1') {
+				const m1Ago = new Date(today);
+				m1Ago.setMonth(m1Ago.getMonth() - 1);
+				startDateInput.value = formatDateStr(m1Ago);
+				endDateInput.value = formatDateStr(today);
+			} else if (val === 'MONTH_3') {
+				const m3Ago = new Date(today);
+				m3Ago.setMonth(m3Ago.getMonth() - 3);
+				startDateInput.value = formatDateStr(m3Ago);
+				endDateInput.value = formatDateStr(today);
+			} else if (val === 'MONTH_6') {
+				const m6Ago = new Date(today);
+				m6Ago.setMonth(m6Ago.getMonth() - 6);
+				startDateInput.value = formatDateStr(m6Ago);
+				endDateInput.value = formatDateStr(today);
+			} else if (val === 'CUSTOM') {
+				startDateInput.focus();
+				return;
+			}
+		}
+
+		function onManualDateChange(inputEl) {
+			const form = inputEl.closest('form');
+			if (form) {
+				const presetSelect = form.querySelector('select[name="date_range_preset"]');
+				if (presetSelect) {
+					presetSelect.value = 'CUSTOM';
+				}
+			}
+		}
 			let selectedSearchStatus = ''; // 전역 변수
 	
 			document.querySelectorAll('.card-clickable').forEach(function(card) {
@@ -94,12 +159,19 @@
 			        const searchType = document.querySelector('select[name="search_type"]').value;
 			        const searchText = document.querySelector('input[name="search_text"]').value;
 			        const orderType = document.querySelector('select[name="order_type"]').value;
-	
+			        const startDate = document.querySelector('input[name="start_date"]').value;
+			        const endDate = document.querySelector('input[name="end_date"]').value;
+			        const presetSelect = document.querySelector('select[name="date_range_preset"]');
+			        const dateRangePreset = presetSelect ? presetSelect.value : '';
+
 			        const params = new URLSearchParams({
 			            search_type: searchType,
 			            search_text: searchText,
 			            order_type: orderType,
-			            search_status: selectedSearchStatus
+			            search_status: selectedSearchStatus,
+			            start_date: startDate,
+			            end_date: endDate,
+			            date_range_preset: dateRangePreset
 			        });
 	
 			        location.href = "/approval/receive?" + params.toString();
@@ -128,6 +200,21 @@
 			<form class="d-flex align-items-center gap-2 flex-wrap"
 				action="/approval/receive" method="get">
 				<input type="hidden" name="search_status" id="search_status_input" th:value="${searchDto.search_status}">
+				<select id="date_range_preset" name="date_range_preset" class="form-select w-auto bg-primary-subtle border-0" onchange="handleDateRangePresetChange(this)">
+					<option value="ALL" th:selected="${searchDto.date_range_preset == null or searchDto.date_range_preset == '' or searchDto.date_range_preset == 'ALL'}">모든 기간</option>
+					<option value="TODAY" th:selected="${searchDto.date_range_preset == 'TODAY'}">오늘</option>
+					<option value="YESTERDAY" th:selected="${searchDto.date_range_preset == 'YESTERDAY'}">어제</option>
+					<option value="WEEK" th:selected="${searchDto.date_range_preset == 'WEEK'}">1주일</option>
+					<option value="MONTH_1" th:selected="${searchDto.date_range_preset == 'MONTH_1'}">1개월</option>
+					<option value="MONTH_3" th:selected="${searchDto.date_range_preset == 'MONTH_3'}">3개월</option>
+					<option value="MONTH_6" th:selected="${searchDto.date_range_preset == 'MONTH_6'}">6개월</option>
+					<option value="CUSTOM" th:selected="${searchDto.date_range_preset == 'CUSTOM'}">직접 입력</option>
+				</select>
+				<div class="d-flex align-items-center gap-1">
+					<input type="date" name="start_date" th:value="${searchDto.start_date}" class="form-control bg-primary-subtle border-0 py-2 px-2 fs-3" style="width: 140px;" title="시작일" onchange="onManualDateChange(this)">
+					<span class="fw-bold text-muted">~</span>
+					<input type="date" name="end_date" th:value="${searchDto.end_date}" class="form-control bg-primary-subtle border-0 py-2 px-2 fs-3" style="width: 140px;" title="종료일" onchange="onManualDateChange(this)">
+				</div>
 				<select name="search_type"
 					class="form-select w-auto bg-primary-subtle border-0"
 					style="width: 120px;">

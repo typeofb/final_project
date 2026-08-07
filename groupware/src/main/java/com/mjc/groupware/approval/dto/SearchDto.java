@@ -18,4 +18,7 @@ public class SearchDto {
 	private String search_type;
 	private int order_type;
 	private String search_status;
+	private String start_date;
+	private String end_date;
+	private String date_range_preset;
 }
