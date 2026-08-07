@@ -345,7 +345,7 @@ public class ApprovalController {
 	@PostMapping("/approval/create")
 	@ResponseBody
 	public Map<String,String> createApprovalApi(ApprovalDto approvalDto,
-												@RequestParam("files") List<MultipartFile> files,
+												@RequestParam(value = "files", required = false) List<MultipartFile> files,
 												@AuthenticationPrincipal UserDetails userDetails) {
 		Map<String,String> resultMap = new HashMap<String,String>();
 		resultMap.put("res_code", "500");
