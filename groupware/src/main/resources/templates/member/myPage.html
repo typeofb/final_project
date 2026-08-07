@@ -338,15 +338,49 @@ layout:decorate="~{include/layout :: layout}">
 					<div class="modal-dialog modal-lg modal-dialog-centered">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="signatureModalLabel">서명란: 마우스로
-									입력하세요</h5>
+								<h5 class="modal-title" id="signatureModalLabel">전자서명 등록</h5>
 								<button type="button" class="btn-close" data-bs-dismiss="modal"
 									aria-label="닫기"></button>
 							</div>
 			
 							<div class="modal-body">
-								<div id="signatureContainer" class="p-3 bg-light rounded shadow-sm">
-									<div id="signature" style="width: 100%; height: 250px;"></div>
+								<ul class="nav nav-tabs mb-3" id="sigTab" role="tablist">
+									<li class="nav-item" role="presentation">
+										<button class="nav-link active" id="sig-draw-tab" data-bs-toggle="tab"
+											data-bs-target="#sig-draw-pane" type="button" role="tab"
+											aria-controls="sig-draw-pane" aria-selected="true">
+											✍️ 마우스 직접 입력
+										</button>
+									</li>
+									<li class="nav-item" role="presentation">
+										<button class="nav-link" id="sig-file-tab" data-bs-toggle="tab"
+											data-bs-target="#sig-file-pane" type="button" role="tab"
+											aria-controls="sig-file-pane" aria-selected="false">
+											📁 파일 직접 업로드
+										</button>
+									</li>
+								</ul>
+								<div class="tab-content" id="sigTabContent">
+									<div class="tab-pane fade show active" id="sig-draw-pane" role="tabpanel"
+										aria-labelledby="sig-draw-tab">
+										<div id="signatureContainer" class="p-3 bg-light rounded shadow-sm">
+											<div id="signature" style="width: 100%; height: 250px;"></div>
+										</div>
+									</div>
+									<div class="tab-pane fade" id="sig-file-pane" role="tabpanel"
+										aria-labelledby="sig-file-tab">
+										<div class="p-3 bg-light rounded shadow-sm">
+											<div class="mb-3">
+												<label for="signatureFileInput" class="form-label font-weight-bold">서명 이미지 파일 선택</label>
+												<input class="form-control" type="file" id="signatureFileInput" accept="image/png, image/jpeg, image/jpg, image/gif">
+												<div class="form-text text-muted">지원 형식: PNG, JPG, JPEG, GIF</div>
+											</div>
+											<div id="sigFilePreviewContainer" class="text-center p-2 border rounded bg-white d-none" style="min-height: 150px;">
+												<p class="text-muted small mb-2">서명 이미지 미리보기</p>
+												<img id="sigFilePreview" src="" alt="서명 이미지 미리보기" style="max-height: 180px; max-width: 100%; object-fit: contain;">
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 			
@@ -395,20 +429,53 @@ layout:decorate="~{include/layout :: layout}">
 				
                 <!-- 서명 업데이트 Modal -->
 				<div class="modal fade" id="updateSignatureModal" tabindex="-1"
-					aria-labelledby="signatureModalLabel" aria-hidden="true">
+					aria-labelledby="updateSignatureModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg modal-dialog-centered">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="updateSignatureModalLabel">서명란:
-									마우스로 입력하세요</h5>
+								<h5 class="modal-title" id="updateSignatureModalLabel">전자서명 변경</h5>
 								<button type="button" class="btn-close" data-bs-dismiss="modal"
 									aria-label="닫기"></button>
 							</div>
 			
 							<div class="modal-body">
-								<div id="updateSignatureContainer"
-									class="p-3 bg-light rounded shadow-sm">
-									<div id="updateSignature" style="width: 100%; height: 250px;"></div>
+								<ul class="nav nav-tabs mb-3" id="updateSigTab" role="tablist">
+									<li class="nav-item" role="presentation">
+										<button class="nav-link active" id="update-sig-draw-tab" data-bs-toggle="tab"
+											data-bs-target="#update-sig-draw-pane" type="button" role="tab"
+											aria-controls="update-sig-draw-pane" aria-selected="true">
+											✍️ 마우스 직접 입력
+										</button>
+									</li>
+									<li class="nav-item" role="presentation">
+										<button class="nav-link" id="update-sig-file-tab" data-bs-toggle="tab"
+											data-bs-target="#update-sig-file-pane" type="button" role="tab"
+											aria-controls="update-sig-file-pane" aria-selected="false">
+											📁 파일 직접 업로드
+										</button>
+									</li>
+								</ul>
+								<div class="tab-content" id="updateSigTabContent">
+									<div class="tab-pane fade show active" id="update-sig-draw-pane" role="tabpanel"
+										aria-labelledby="update-sig-draw-tab">
+										<div id="updateSignatureContainer" class="p-3 bg-light rounded shadow-sm">
+											<div id="updateSignature" style="width: 100%; height: 250px;"></div>
+										</div>
+									</div>
+									<div class="tab-pane fade" id="update-sig-file-pane" role="tabpanel"
+										aria-labelledby="update-sig-file-tab">
+										<div class="p-3 bg-light rounded shadow-sm">
+											<div class="mb-3">
+												<label for="updateSignatureFileInput" class="form-label font-weight-bold">서명 이미지 파일 선택</label>
+												<input class="form-control" type="file" id="updateSignatureFileInput" accept="image/png, image/jpeg, image/jpg, image/gif">
+												<div class="form-text text-muted">지원 형식: PNG, JPG, JPEG, GIF</div>
+											</div>
+											<div id="updateSigFilePreviewContainer" class="text-center p-2 border rounded bg-white d-none" style="min-height: 150px;">
+												<p class="text-muted small mb-2">서명 이미지 미리보기</p>
+												<img id="updateSigFilePreview" src="" alt="서명 이미지 미리보기" style="max-height: 180px; max-width: 100%; object-fit: contain;">
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 			
@@ -1078,16 +1145,16 @@ layout:decorate="~{include/layout :: layout}">
 		const token = $('meta[name="_csrf"]').attr('content');
 		const header = $('meta[name="_csrf_header"]').attr('content');
 	
-		let isSignatureInitialized = false;
-	
+		let isSigInitialized = false;
+		let isUpdateSigInitialized = false;
+		let uploadedSignatureBase64 = null;
+		let uploadedUpdateSignatureBase64 = null;
+
 		$(document).ready(function() {
 			
 			$('#saveSignatureModal').on('shown.bs.modal', function() {
-	
 				memberNo = $('#saveSignature_btn').val(); // 회원 번호 가져오기
-	
 				const signature = $('#member_signature').val();
-	
 				if (signature) {
 					const imgSrc = 'data:image/png;base64,' + signature;
 					$('#signImg').attr('src', imgSrc);
@@ -1095,70 +1162,148 @@ layout:decorate="~{include/layout :: layout}">
 					$('#signImg').attr('src', '');
 				}
 			});
-	
+
 			$('#signatureModal').on('shown.bs.modal', function() {
-	
 				memberNo = $('#signature_btn').val(); // 회원 번호 가져오기
-	
-				// 한 번만 초기화되게 체크
-				if (!isSignatureInitialized) {
+				if (!isSigInitialized) {
 					$("#signature").jSignature({
-						height : 300,
+						height : 250,
 						width : 600,
-						"decor-color": "transparent", // 중앙선 색상 설정
-						"decor-weight": 0             // 두께를 없앰
+						"decor-color": "transparent",
+						"decor-weight": 0
 					});
-					// 캔버스 내부 선 초기화
 					var $canvas = $("#signature").find("canvas")[0];
-					var ctx = $canvas.getContext("2d");
-					ctx.clearRect(0, 0, $canvas.width, $canvas.height); // 캔버스 전체 지우기
-					isSignatureInitialized = true;
+					if ($canvas) {
+						var ctx = $canvas.getContext("2d");
+						ctx.clearRect(0, 0, $canvas.width, $canvas.height);
+					}
+					isSigInitialized = true;
 				}
 			});
-	
+
 			$('#updateSignatureModal').on('shown.bs.modal', function() {
-	
 				memberNo = $('#updateSignature_btn').val(); // 회원 번호 가져오기
-	
-				// 한 번만 초기화되게 체크
-				if (!isSignatureInitialized) {
+				if (!isUpdateSigInitialized) {
 					$("#updateSignature").jSignature({
-						height : 300,
+						height : 250,
 						width : 600,
-						"decor-color": "transparent", // 중앙선 색상 설정
-						"decor-weight": 0             // 두께를 없앰
+						"decor-color": "transparent",
+						"decor-weight": 0
 					});
-					// 캔버스 내부 선 초기화
 					var $canvas = $("#updateSignature").find("canvas")[0];
-					var ctx = $canvas.getContext("2d");
-					ctx.clearRect(0, 0, $canvas.width, $canvas.height); // 캔버스 전체 지우기
-					isSignatureInitialized = true;
+					if ($canvas) {
+						var ctx = $canvas.getContext("2d");
+						ctx.clearRect(0, 0, $canvas.width, $canvas.height);
+					}
+					isUpdateSigInitialized = true;
 				}
 			});
-	
-			// 모달 닫힐 때 서명 내용 초기화
+
+			// 모달 닫힐 때 서명 및 파일 선택 초기화
 			$('#signatureModal').on('hidden.bs.modal', function() {
-				if (isSignatureInitialized) {
+				if (isSigInitialized) {
 					$("#signature").jSignature("reset");
 				}
+				$('#signatureFileInput').val('');
+				$('#sigFilePreviewContainer').addClass('d-none');
+				$('#sigFilePreview').attr('src', '');
+				uploadedSignatureBase64 = null;
+				$('#sig-draw-tab').tab('show');
 			});
-	
+
 			$('#updateSignatureModal').on('hidden.bs.modal', function() {
-				if (isSignatureInitialized) {
+				if (isUpdateSigInitialized) {
 					$("#updateSignature").jSignature("reset");
+				}
+				$('#updateSignatureFileInput').val('');
+				$('#updateSigFilePreviewContainer').addClass('d-none');
+				$('#updateSigFilePreview').attr('src', '');
+				uploadedUpdateSignatureBase64 = null;
+				$('#update-sig-draw-tab').tab('show');
+			});
+
+			// 파일 선택 이벤트 처리 - 등록 모달
+			$('#signatureFileInput').on('change', function(e) {
+				const file = e.target.files[0];
+				if (file) {
+					if (!file.type.startsWith('image/')) {
+						alert('이미지 파일만 업로드할 수 있습니다.');
+						$(this).val('');
+						$('#sigFilePreviewContainer').addClass('d-none');
+						uploadedSignatureBase64 = null;
+						return;
+					}
+					const reader = new FileReader();
+					reader.onload = function(evt) {
+						const dataUrl = evt.target.result;
+						$('#sigFilePreview').attr('src', dataUrl);
+						$('#sigFilePreviewContainer').removeClass('d-none');
+						uploadedSignatureBase64 = dataUrl.split(',')[1];
+					};
+					reader.readAsDataURL(file);
+				} else {
+					$('#sigFilePreviewContainer').addClass('d-none');
+					uploadedSignatureBase64 = null;
+				}
+			});
+
+			// 파일 선택 이벤트 처리 - 변경 모달
+			$('#updateSignatureFileInput').on('change', function(e) {
+				const file = e.target.files[0];
+				if (file) {
+					if (!file.type.startsWith('image/')) {
+						alert('이미지 파일만 업로드할 수 있습니다.');
+						$(this).val('');
+						$('#updateSigFilePreviewContainer').addClass('d-none');
+						uploadedUpdateSignatureBase64 = null;
+						return;
+					}
+					const reader = new FileReader();
+					reader.onload = function(evt) {
+						const dataUrl = evt.target.result;
+						$('#updateSigFilePreview').attr('src', dataUrl);
+						$('#updateSigFilePreviewContainer').removeClass('d-none');
+						uploadedUpdateSignatureBase64 = dataUrl.split(',')[1];
+					};
+					reader.readAsDataURL(file);
+				} else {
+					$('#updateSigFilePreviewContainer').addClass('d-none');
+					uploadedUpdateSignatureBase64 = null;
 				}
 			});
 		});
-	
+
+		// 캔버스 초기화 함수
+		function resetCanvas(id) {
+			if ($("#" + id).data('jSignature')) {
+				$("#" + id).jSignature("reset");
+			}
+		}
+
 		// 서명 저장
 		async function saveSignature() {
-			const data = $("#signature").jSignature("getData", "image");
+			let imageData = null;
 
-			const imageData = data[1];
-			
+			// 파일 직접 업로드 탭이 활성화된 경우
+			if ($('#sig-file-tab').hasClass('active')) {
+				if (!uploadedSignatureBase64) {
+					alert('서명 이미지 파일을 선택해 주세요.');
+					return;
+				}
+				imageData = uploadedSignatureBase64;
+			} else {
+				// 마우스 직접 입력 탭이 활성화된 경우
+				if ($("#signature").jSignature("getData", "native").length === 0) {
+					alert('마우스로 서명을 입력해 주세요.');
+					return;
+				}
+				const data = $("#signature").jSignature("getData", "image");
+				imageData = data[1];
+			}
+
 			const isConfirmed = await confirm('전자서명을 등록하시겠습니까?');
-			if(!isConfirmed) return;
-			
+			if (!isConfirmed) return;
+
 			$.ajax({
 				url : '/member/create/signature',
 				method : 'post',
@@ -1176,21 +1321,35 @@ layout:decorate="~{include/layout :: layout}">
 				error : function() {
 					alert('서명 저장 실패');
 				}
-			})
+			});
 
-			// 모달 닫기
 			$('#signatureModal').modal('hide');
 		}
-	
-		// 서명변경
+
+		// 서명 변경
 		async function updateSignature() {
-			const data = $("#updateSignature").jSignature("getData", "image");
-	
-			const imageData = data[1];
-			
+			let imageData = null;
+
+			// 파일 직접 업로드 탭이 활성화된 경우
+			if ($('#update-sig-file-tab').hasClass('active')) {
+				if (!uploadedUpdateSignatureBase64) {
+					alert('서명 이미지 파일을 선택해 주세요.');
+					return;
+				}
+				imageData = uploadedUpdateSignatureBase64;
+			} else {
+				// 마우스 직접 입력 탭이 활성화된 경우
+				if ($("#updateSignature").jSignature("getData", "native").length === 0) {
+					alert('마우스로 서명을 입력해 주세요.');
+					return;
+				}
+				const data = $("#updateSignature").jSignature("getData", "image");
+				imageData = data[1];
+			}
+
 			const isConfirmed = await confirm('전자서명을 변경하시겠습니까?');
-			if(!isConfirmed) return;
-	
+			if (!isConfirmed) return;
+
 			$.ajax({
 				url : '/member/update/signature',
 				method : 'post',
@@ -1208,21 +1367,22 @@ layout:decorate="~{include/layout :: layout}">
 				error : function() {
 					alert('서명 저장 실패');
 				}
-			})
-	
-			// 모달 닫기
-			$('#signatureModal').modal('hide');
+			});
+
+			$('#updateSignatureModal').modal('hide');
 		}
-	
+
 		// 서명 삭제
 		function deleteSignature() {
 			$("#" + memberNo + "_img").attr("src", "");
 			$("#" + memberNo + "_del").css("display", "none");
 		}
-	
+
 		// 서명 닫기
 		function closeSignature() {
 			$('#signatureModal').modal('hide');
+			$('#saveSignatureModal').modal('hide');
+			$('#updateSignatureModal').modal('hide');
 		}
 	</script>
 	
