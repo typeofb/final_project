@@ -61,10 +61,10 @@ layout:decorate="~{include/layout :: layout}">
 					
 				    <div class="input-group">
 				      <th:block th:if="${searchDto.search_text != null}">
-					  	<input type="text" id="search_text" name="search_text" th:value="${searchDto.search_text}" class="form-control form-control-sm" placeholder="사원명(사번) 검색" />
+					  	<input type="text" id="search_text" name="search_text" th:value="${searchDto.search_text}" class="form-control form-control-sm" placeholder="사원명 검색" />
 				      </th:block>
 				      <th:block th:if="${searchDto.search_text == null}">
-				      	<input type="text" id="search_text" name="search_text" class="form-control form-control-sm" placeholder="사원명(사번) 검색" />
+				      	<input type="text" id="search_text" name="search_text" class="form-control form-control-sm" placeholder="사원명 검색" />
 				      </th:block>
 				      <button class="btn btn-primary btn-sm" id="searchBtn">검색</button>
 				      <button class="btn btn-secondary btn-sm" id="resetBtn" type="button">초기화</button>
@@ -88,7 +88,7 @@ layout:decorate="~{include/layout :: layout}">
 		                       <h6 class="fs-4 fw-semibold mb-0">선택</h6>
 		                     </th> -->
 		                     <th>
-		                       <h6 class="fs-4 fw-semibold mb-0">사원명(사번)</h6>
+		                       <h6 class="fs-4 fw-semibold mb-0">사원명</h6>
 		                     </th>
 		                     <th>
 		                       <h6 class="fs-4 fw-semibold mb-0">입사일</h6>
@@ -112,7 +112,7 @@ layout:decorate="~{include/layout :: layout}">
 							<td class="text-center">
 								<div>
 									<h6 class="fs-4 fw-semibold mb-0 member-name" th:text="${member.memberName}">사원명</h6>
-									<span class="fw-normal" th:text="|#${member.memberNo}|">#사번</span>
+									<span class="fw-normal d-none" th:text="|#${member.memberNo}|">#사번</span>
 								</div>
 								<input type="hidden" id="memberNo" th:value="${member.memberNo}">
 							</td>
@@ -455,7 +455,7 @@ layout:decorate="~{include/layout :: layout}">
 	        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 	      </div>
 	      <div class="modal-body text-center">
-			  <p><strong id="memberName">사원명 (#123)</strong></p>
+			  <p><strong id="memberName">사원명</strong></p>
 			  <p>현재 연차: <span id="currentAnnual">0</span>일</p>
 			
 			  <!-- ✔ input + 버튼 줄 정렬 -->
@@ -492,7 +492,7 @@ layout:decorate="~{include/layout :: layout}">
 
 			    if (!memberNo || !name) return;
 
-			    document.getElementById('memberName').textContent = `${name} (#${memberNo})`;
+			    document.getElementById('memberName').textContent = name;
 			    document.getElementById('currentAnnual').textContent = currentAnnual;
 			    document.getElementById('annual_leave').value = currentAnnual;
 

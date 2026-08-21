@@ -60,7 +60,7 @@ layout:decorate="~{include/layout :: layout}">
 	          <h4 class="card-title fw-bold mb-0 me-3" style="min-width: 100px;">사원 목록</h4>
 	          <div class="input-group input-group-sm w-100">
 	            <input type="text" id="search_text" name="search_text"
-	              th:value="${searchDto.search_text}" class="form-control" placeholder="사원명(사번) 검색" />
+	              th:value="${searchDto.search_text}" class="form-control" placeholder="사원명 검색" />
 	            <button class="btn btn-primary" id="searchBtn">검색</button>
 	            <button class="btn btn-secondary" id="resetBtn" type="button">초기화</button>
 	          </div>
@@ -77,7 +77,7 @@ layout:decorate="~{include/layout :: layout}">
 	        <table class="table text-nowrap mb-0 align-middle">
 	          <thead class="text-dark fs-4">
 	            <tr>
-	              <th><h6 class="fs-4 fw-semibold mb-0">사원명(사번)</h6></th>
+	              <th><h6 class="fs-4 fw-semibold mb-0">사원명</h6></th>
 	              <th><h6 class="fs-4 fw-semibold mb-0">날짜</h6></th>
 	              <th><h6 class="fs-4 fw-semibold mb-0">출근 시간</h6></th>
 	              <th><h6 class="fs-4 fw-semibold mb-0">퇴근 시간</h6></th>
@@ -89,7 +89,7 @@ layout:decorate="~{include/layout :: layout}">
 	            <tr th:each="dto : ${memberAttendanceList}">
 	              <td class="text-center">
                     <h6 class="fs-4 fw-semibold mb-0 member-name" th:text="${dto.member.memberName}">사원명</h6>
-                    <span class="fw-normal" th:text="|#${dto.member.memberNo}|">#사번</span>
+                    <span class="fw-normal d-none" th:text="|#${dto.member.memberNo}|">#사번</span>
 	                <input type="hidden" id="memberNo" th:value="${dto.member.memberNo}">
 	              </td>
 	              <td class="text-center"><h6 class="fs-4 fw-semibold mb-0" th:text="${dto.attendDate != null ? #temporals.format(dto.attendDate, 'yyyy.MM.dd') : '-'}"></h6></td>
@@ -291,7 +291,7 @@ layout:decorate="~{include/layout :: layout}">
 	      </div>
 	
 	      <div class="modal-body text-start">
-			  <p><strong id="modalMemberName">사원명 (#사번)</strong></p>
+			  <p><strong id="modalMemberName">사원명</strong></p>
 			
 			  <div class="mb-3">
 			    <label for="attendDate" class="form-label fw-semibold">날짜</label>
@@ -368,7 +368,7 @@ layout:decorate="~{include/layout :: layout}">
 	
 	      // 값 세팅
 	      document.getElementById('attendDate').value = attendDate;
-	      document.getElementById('modalMemberName').textContent = `${name} (#${memberNo})`;
+	      document.getElementById('modalMemberName').textContent = name;
 	      document.getElementById('editStartTime').value = startTime !== '-' ? startTime : '';
 	      document.getElementById('editEndTime').value = endTime !== '-' ? endTime : '';
 	      document.getElementById('editLateYn').value = (lateStatus === '지각') ? 'Y' : 'N';

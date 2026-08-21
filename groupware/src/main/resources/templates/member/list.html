@@ -100,7 +100,7 @@ layout:decorate="~{include/layout :: layout}">
 							                        <h6 class="fs-4 fw-semibold mb-0">선택</h6>
 							                      </th>
 							                      <th>
-							                        <h6 class="fs-4 fw-semibold mb-0">사원명(사번)</h6>
+							                        <h6 class="fs-4 fw-semibold mb-0">사원명</h6>
 							                      </th>
 							                      <th>
 							                        <h6 class="fs-4 fw-semibold mb-0">부서</h6>
@@ -141,10 +141,10 @@ layout:decorate="~{include/layout :: layout}">
 											
 										    <div class="input-group">
 										      <th:block th:if="${searchText != null}">
-											  	<input type="text" id="search_text" name="search_text" th:value="${searchText}" class="form-control form-control-sm" placeholder="사원명(사번) 검색" />
+											  	<input type="text" id="search_text" name="search_text" th:value="${searchText}" class="form-control form-control-sm" placeholder="사원명 검색" />
 										      </th:block>
 										      <th:block th:if="${searchText == null}">
-										      	<input type="text" id="search_text" name="search_text" class="form-control form-control-sm" placeholder="사원명(사번) 검색" />
+										      	<input type="text" id="search_text" name="search_text" class="form-control form-control-sm" placeholder="사원명 검색" />
 										      </th:block>
 										      <button class="btn btn-primary btn-sm" id="searchBtn">검색</button>
 										      <button class="btn btn-secondary btn-sm" id="resetBtn" type="button">초기화</button>
@@ -167,7 +167,7 @@ layout:decorate="~{include/layout :: layout}">
 							                        <h6 class="fs-4 fw-semibold mb-0">선택</h6>
 							                      </th>
 							                      <th>
-							                        <h6 class="fs-4 fw-semibold mb-0">사원명(사번)</h6>
+							                        <h6 class="fs-4 fw-semibold mb-0">사원명</h6>
 							                      </th>
 							                      <th>
 							                        <h6 class="fs-4 fw-semibold mb-0">부서</h6>
@@ -195,7 +195,7 @@ layout:decorate="~{include/layout :: layout}">
 														<div class="d-flex align-items-center">
 															<div class="ms-3">
 																<h6 class="fs-4 fw-semibold mb-0 member-name" th:text="${member.memberName}">사원명</h6>
-																<span class="fw-normal" th:text="|#${member.memberNo}|">#사번</span>
+																<span class="fw-normal d-none" th:text="|#${member.memberNo}|">#사번</span>
 															</div>
 														</div>
 													</td>
@@ -417,7 +417,7 @@ layout:decorate="~{include/layout :: layout}">
 									<div class="d-flex align-items-center">
 										<div class="ms-3">
 											<h6 class="fs-4 fw-semibold mb-0 member-name">${memberDto.member_name}</h6>
-											<span class="fw-normal">#${memberDto.member_no}</span>
+											<span class="fw-normal d-none">#${memberDto.member_no}</span>
 										</div>
 									</div>
 								</td>

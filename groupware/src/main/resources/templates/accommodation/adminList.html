@@ -76,7 +76,7 @@ layout:decorate="~{include/layout :: layout}">
 	              <!-- 전체 선택 체크박스 -->
 	              <th>번호</th>
 	              <th>사원명</th>
-	              <th>사번</th>
+	              <th class="d-none">사번</th>
 	              <th>예약신청일</th>
 	              <th>체크인</th>
 	              <th>체크아웃</th>
@@ -89,7 +89,7 @@ layout:decorate="~{include/layout :: layout}">
 	         		<tr th:each="reservation, number : ${reservationList}">
 				      <td th:text="${number.index+1}">번호</td>
 	  				  <td th:text="${reservation.member_name}">사원명</td>
-	  				  <td th:text="${reservation.member_no}">사번</td>
+	  				  <td class="d-none" th:text="${reservation.member_no}">사번</td>
 				      <td th:text="${#temporals.format(reservation.reservation_date, 'yyyy-MM-dd HH:mm')}">예약신청일</td>
 				      <td th:text="${reservation.check_in}">체크인</td>
 				      <td th:text="${reservation.check_out}">체크아웃</td>
