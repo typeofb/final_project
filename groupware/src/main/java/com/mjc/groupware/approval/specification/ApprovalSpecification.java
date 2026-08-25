@@ -46,6 +46,14 @@ public class ApprovalSpecification {
 		};
 	}
 
+	public static Specification<Approval> approvalDeptNameContains(String keyword) {
+		return (root, query, criteriaBuilder) -> {
+			Join<Object, Object> memberJoin = root.join("member");
+			Join<Object, Object> deptJoin = memberJoin.join("dept");
+			return criteriaBuilder.like(deptJoin.get("deptName"), "%" + keyword + "%");
+		};
+	}
+
 	public static Specification<Approval> approvalRegDateBetween(String startDateStr, String endDateStr) {
 		return (root, query, criteriaBuilder) -> {
 			if ((startDateStr == null || startDateStr.trim().isEmpty()) && (endDateStr == null || endDateStr.trim().isEmpty())) {

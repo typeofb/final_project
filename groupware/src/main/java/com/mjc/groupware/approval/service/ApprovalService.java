@@ -1039,11 +1039,14 @@ public class ApprovalService {
 				spec = spec.and(ApprovalSpecification.approvalFormNameContains(searchText));
 			} else if("member_name".equals(searchDto.getSearch_type())) {
 				spec = spec.and(ApprovalSpecification.approvalMemberNameContains(searchText));
+			} else if("dept_name".equals(searchDto.getSearch_type())) {
+				spec = spec.and(ApprovalSpecification.approvalDeptNameContains(searchText));
 			} else {
 				Specification<Approval> titleSpec = ApprovalSpecification.approvalTitleContains(searchText);
 				Specification<Approval> formSpec = ApprovalSpecification.approvalFormNameContains(searchText);
 				Specification<Approval> memberSpec = ApprovalSpecification.approvalMemberNameContains(searchText);
-				spec = spec.and(titleSpec.or(formSpec).or(memberSpec));
+				Specification<Approval> deptSpec = ApprovalSpecification.approvalDeptNameContains(searchText);
+				spec = spec.and(titleSpec.or(formSpec).or(memberSpec).or(deptSpec));
 			}
 		}
 		
