@@ -108,18 +108,10 @@
               <!-- ============================= -->
               
               <th:block th:if="${boardMenu}">
-	              <li class="sidebar-item">
-		          	<a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-		            	<span class="rounded-3">
-		                	<i class="ti ti-layout-board"></i>
-		                </span>
-		                <span class="hide-menu">게시판</span>
-		           	</a>
-		            <ul aria-expanded="false" class="collapse first-level">
 		            	<th:block th:each="funcNo : ${accessibleFuncNoList}">
 			      			<th:block th:if="${funcNo == 24}">
 			      				<li class="sidebar-item">
-				                    <a th:href="@{/notice}" class="sidebar-link inner-sidebar-item">
+				                    <a th:href="@{/notice}" class="sidebar-link">
 				                      <i class="ti ti-alert-circle"></i>
 				                      <span class="hide-menu">공지사항</span>
 				                    </a>
@@ -129,15 +121,13 @@
 			      		<th:block th:each="funcNo : ${accessibleFuncNoList}">
 			      			<th:block th:if="${funcNo == 26}">
 			                  	<li class="sidebar-item">
-				                    <a th:href="@{/board/list}" class="sidebar-link inner-sidebar-item">
+				                    <a th:href="@{/board/list}" class="sidebar-link">
 				                    	<i class="ti ti-clipboard-text"></i>
 				                    	<span class="hide-menu">자유게시판</span>
 				                    </a>
 			                  	</li>
 			      			</th:block>
 			      		</th:block>
-		    		</ul>
-		   		  </li>
               </th:block>
 	   		  
 	   		  <!-- ============================= -->
