@@ -224,14 +224,7 @@
 		              <!-- =================== -->
 		              
 		              <th:block th:if="${showHrMenu}">
-			          	<li class="sidebar-item">
-			            	<a class="sidebar-link inner-sidebar-item" href="javascript:void(0)" aria-expanded="false">
-			                	<span class="rounded-3">
-			                    	<i class="ti ti-layout"></i>
-			                  	</span>
-			                  	<span class="hide-menu">관리 : 인사</span>
-			                </a>
-			                <ul aria-expanded="false" class="collapse second-level">
+
 				                <th:block th:each="funcNo : ${accessibleFuncNoList}">
 				                	<th:block th:if="${funcNo == 12}">
 					                	<li class="sidebar-item">
@@ -272,8 +265,7 @@
 					                  	</li>
 				                	</th:block>
 				                </th:block>
-			                </ul>
-			          	</li>
+
 		              </th:block>
 		              
 		              <!-- ============================= -->
@@ -281,14 +273,7 @@
                	 	  <!-- ============================= -->
 		              
 		              <th:block th:if="${accessibleFuncNoList.contains(16L) or accessibleFuncNoList.contains(37L)}">
-		      		  		<li class="sidebar-item">
-					        	<a class="sidebar-link inner-sidebar-item" href="javascript:void(0)" aria-expanded="false">
-					            	<span class="rounded-3">
-					                	<i class="ti ti-apps"></i>
-					                </span>
-					                <span class="hide-menu">관리 : 결재</span>
-					           	</a>
-					           	<ul aria-expanded="false" class="collapse second-level">
+
 					           		<th:block th:each="funcNo : ${accessibleFuncNoList}">
 					           			<th:block th:if="${funcNo == 16}">
 									    	<li class="sidebar-item">
@@ -309,8 +294,7 @@
 						                  	</li>
 					           			</th:block>
 					           		</th:block>
-								</ul>
-				        	</li>
+
 		      		  </th:block>
 		              
 		              <!-- ============================= -->

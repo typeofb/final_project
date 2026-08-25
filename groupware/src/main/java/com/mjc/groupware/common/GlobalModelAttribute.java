@@ -127,7 +127,7 @@ public class GlobalModelAttribute {
 	    
 	    // 설정 메뉴가 보여야할지 판단하여 플래그를 뿌려줌
 	    boolean showSettingMenu = accessibleFuncNoList.stream()
-	    	    .anyMatch(no -> no == 12 || no == 13 || no == 14 || no == 15 || no == 16 || no == 18 || no == 33 || no == 28);
+	    	    .anyMatch(no -> no == 12 || no == 13 || no == 14 || no == 15 || no == 16 || no == 18 || no == 33 || no == 28 || no == 37);
 	    
 	    model.addAttribute("showSettingMenu", showSettingMenu);
 	}
