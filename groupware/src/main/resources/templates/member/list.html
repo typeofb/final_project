@@ -84,9 +84,10 @@ layout:decorate="~{include/layout :: layout}">
 										    </div>
 										  </div>
 										
-										  <button type="button" id="chkUpdateBtn" class="btn btn-primary btn-sm">
-										    수정
-										  </button>
+										  <div class="d-flex align-items-center gap-1">
+											<button type="button" id="chkCreateBtn" class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center">등록</button>
+										    <button type="button" id="chkUpdateBtn" class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center">수정</button>
+										  </div>
 										</div>
 										
                           				<br>
@@ -161,9 +162,10 @@ layout:decorate="~{include/layout :: layout}">
 										  </div>
 										
 										  
-										  <button type="button" id="checkboxUpdateBtn" class="btn btn-primary btn-sm">
-										    수정
-										  </button>
+										  <div class="d-flex align-items-center gap-1">
+										    <button type="button" id="checkboxCreateBtn" class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center">등록</button>
+										    <button type="button" id="checkboxUpdateBtn" class="btn btn-primary btn-sm d-inline-flex align-items-center justify-content-center">수정</button>
+										  </div>
 										</div>
 										
 										<br>
@@ -635,6 +637,15 @@ layout:decorate="~{include/layout :: layout}">
 				})
 			}
 			
+		});
+	</script>
+	
+	<script>
+		document.getElementById('chkCreateBtn')?.addEventListener('click', function () {
+			location.href = '/admin/member/create';
+		});
+		document.getElementById('checkboxCreateBtn')?.addEventListener('click', function () {
+			location.href = '/admin/member/create';
 		});
 	</script>
 	
