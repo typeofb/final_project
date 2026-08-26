@@ -17,4 +17,5 @@ public class ApprovalStatusVo {
 	private int P_count;
 	private int A_count;
 	private int R_count;
+	private int C_count;
 }

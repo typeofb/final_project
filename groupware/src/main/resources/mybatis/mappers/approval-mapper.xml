@@ -12,23 +12,25 @@
 			SELECT W.appr_no ,W.appr_title ,W.appr_reg_date ,W.appr_status
 			,W.appr_order_status ,W.relationship ,M.member_name
 			,AF.approval_form_name
+			,W.approver_order, W.approver_decision_status
 			FROM
 			(SELECT a.appr_no , a.appr_reg_date
 					,a.appr_title,a.appr_status ,a.appr_order_status
 					,a.appr_sender ,a.approval_type_no
 					,'P' as relationship
+					,p.approver_order, p.approver_decision_status
 			FROM `approval` a
 			JOIN (
 				SELECT *
 				FROM `appr_approver`
 				WHERE approver_no = #{member_no}) p
 			ON a.appr_no = p.appr_no
-			AND p.approver_order <![CDATA[ <= ]]> a.appr_order_status
 			UNION
 			SELECT a.appr_no , a.appr_reg_date
 					,a.appr_title ,a.appr_status ,a.appr_order_status
 					 ,a.appr_sender ,a.approval_type_no
 					,'A' as relationship
+					,1 AS approver_order, t.agreementer_agree_status AS approver_decision_status
 			FROM `approval` a
 			JOIN (SELECT * FROM `appr_agreementer` WHERE agreementer_no = #{member_no}) t ON a.appr_no = t.appr_no
 			UNION
@@ -36,6 +38,7 @@
 					,a.appr_title ,a.appr_status ,a.appr_order_status
 					,a.appr_sender ,a.approval_type_no
 					,'R' AS relationship
+					,1 AS approver_order, 'R' AS approver_decision_status
 			FROM `approval` a
 			JOIN (SELECT * FROM `appr_referencer` WHERE referencer_no = #{member_no}) r ON a.appr_no = r.appr_no
 				) W
@@ -53,7 +56,20 @@
 				AND AA.approval_form_name LIKE CONCAT('%', #{search_text}, '%')
 			</if>
 			<if test="search_status != null and search_status != ''">
-		        AND AA.relationship = #{search_status}
+				<choose>
+					<when test='search_status == "P"'>
+						AND AA.relationship = 'P'
+						AND AA.approver_order = AA.appr_order_status
+						AND (AA.approver_decision_status = 'W' OR AA.approver_decision_status IS NULL)
+						AND AA.appr_status NOT IN ('C', 'R')
+					</when>
+					<when test='search_status == "C"'>
+						AND (AA.appr_status = 'C' OR AA.approver_decision_status = 'C')
+					</when>
+					<otherwise>
+						AND AA.relationship = #{search_status}
+					</otherwise>
+				</choose>
 		    </if>
 			<if test="start_date != null and start_date != ''">
 				AND AA.appr_reg_date &gt;= CONCAT(#{start_date}, ' 00:00:00')
@@ -78,24 +94,35 @@
 	<select id="selectApprovalStatusByMemberNo" parameterType="map"
 	resultType="com.mjc.groupware.approval.mybatis.vo.ApprovalStatusVo">
 	SELECT
-	  SUM(CASE WHEN W.relationship = 'P' THEN 1 ELSE 0 END) AS P_count,
+	  SUM(CASE WHEN W.relationship = 'P' 
+	            AND W.approver_order = W.appr_order_status 
+	            AND (W.approver_decision_status = 'W' OR W.approver_decision_status IS NULL) 
+	            AND W.appr_status NOT IN ('C', 'R') 
+	           THEN 1 ELSE 0 END) AS P_count,
 	  SUM(CASE WHEN W.relationship = 'A' THEN 1 ELSE 0 END) AS A_count,
-	  SUM(CASE WHEN W.relationship = 'R' THEN 1 ELSE 0 END) AS R_count
+	  SUM(CASE WHEN W.relationship = 'R' THEN 1 ELSE 0 END) AS R_count,
+	  SUM(CASE WHEN W.appr_status = 'C' OR W.approver_decision_status = 'C' THEN 1 ELSE 0 END) AS C_count
 	FROM (
-	    SELECT a.appr_no, 'P' AS relationship
+	    SELECT a.appr_no, a.appr_status, a.appr_order_status, 'P' AS relationship,
+	           p.approver_order, p.approver_decision_status
 	    FROM `approval` a
-	    JOIN (SELECT * FROM `appr_approver` WHERE approver_no = #{member_no}) p ON a.appr_no = p.appr_no
-	    AND p.approver_order <![CDATA[ <= ]]> a.appr_order_status
-	
+	    JOIN (
+	        SELECT * 
+	        FROM `appr_approver` 
+	        WHERE approver_no = #{member_no}
+	    ) p ON a.appr_no = p.appr_no
+
 	    UNION ALL
-	
-	    SELECT a.appr_no, 'A' AS relationship
+
+	    SELECT a.appr_no, a.appr_status, a.appr_order_status, 'A' AS relationship,
+	           1 AS approver_order, t.agreementer_agree_status AS approver_decision_status
 	    FROM `approval` a
 	    JOIN (SELECT * FROM `appr_agreementer` WHERE agreementer_no = #{member_no}) t ON a.appr_no = t.appr_no
-	
+
 	    UNION ALL
-	
-	    SELECT a.appr_no, 'R' AS relationship
+
+	    SELECT a.appr_no, a.appr_status, a.appr_order_status, 'R' AS relationship,
+	           1 AS approver_order, 'R' AS approver_decision_status
 	    FROM `approval` a
 	    JOIN (SELECT * FROM `appr_referencer` WHERE referencer_no = #{member_no}) r ON a.appr_no = r.appr_no
 	) W;

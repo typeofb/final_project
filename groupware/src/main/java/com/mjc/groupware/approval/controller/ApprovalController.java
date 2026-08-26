@@ -187,6 +187,9 @@ public class ApprovalController {
 	    MemberDto member = new MemberDto().toDto(entity);
 	    
 	    if(pageDto.getNowPage() == 0) pageDto.setNowPage(1);
+	    if (searchDto.getSearch_status() == null || searchDto.getSearch_status().isEmpty()) {
+	    	searchDto.setSearch_status("D");
+	    }
 	    Page<Approval> approvalList = service.selectApprovalAll(member, searchDto, pageDto);
 	    List<Approval> list = service.selectApprovalAllById(member);
 	    
@@ -246,7 +249,9 @@ public class ApprovalController {
 	    MemberDto member = new MemberDto().toDto(entity);
 	    
 	    if(pageDto.getNowPage() == 0) pageDto.setNowPage(1);
-	    
+	    if (searchDto.getSearch_status() == null || searchDto.getSearch_status().isEmpty()) {
+	    	searchDto.setSearch_status("P");
+	    }
 	    List<ApprovalVo> fullList = service.selectApprovalAllByApproverId(member, searchDto, pageDto);
 	    ApprovalStatusVo statusCnt = service.selectApprovalStatusByApproverId(member);
 	    

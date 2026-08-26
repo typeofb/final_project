@@ -204,15 +204,15 @@
 			
 			window.addEventListener('DOMContentLoaded', function() {
 			    const params = new URLSearchParams(window.location.search);
-			    const searchStatus = params.get('search_status'); // 현재 선택된 status
+			    const hiddenInput = document.getElementById('search_status_input');
+			    const searchStatus = params.get('search_status') || (hiddenInput ? hiddenInput.value : 'D');
 
 			    if (searchStatus) {
-			        selectedSearchStatus = searchStatus; // 전역변수에도 저장
+			        selectedSearchStatus = searchStatus;
 
-			        // 모든 카드 중에 해당 search_status 가진 카드 찾아서 active
 			        document.querySelectorAll('.card-clickable').forEach(function(card) {
 			            const searchStatusInput = card.querySelector('input[name="search_status"]');
-			            if (searchStatusInput.value === searchStatus) {
+			            if (searchStatusInput && searchStatusInput.value === searchStatus) {
 			                card.classList.add('active-card');
 			            }
 			        });

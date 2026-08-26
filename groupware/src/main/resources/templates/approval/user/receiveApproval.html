@@ -59,7 +59,7 @@
 					<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable">
 						<div class="fs-3"></div>
 						<input type="hidden" name="search_status" value="P">
-						<div class="fw-semibold mt-2" style="font-size:16px;">결재자</div>
+						<div class="fw-semibold mt-2" style="font-size:16px;">결재 대기 중</div>
 						<div class="fs-4 fw-bold mt-1" th:text="${statusCnt != null ? statusCnt.P_count : 0}">0</div>
 					</div>
 				</div>
@@ -67,8 +67,16 @@
 					<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable">
 						<div class="fs-3"></div>
 						<input type="hidden" name="search_status" value="R">
-						<div class="fw-semibold mt-2" style="font-size:16px;">참조 / 회람자</div>
+						<div class="fw-semibold mt-2" style="font-size:16px;">참조 / 회람</div>
 						<div class="fs-4 fw-bold mt-1" th:text="${statusCnt != null ? statusCnt.R_count : 0}">0</div>
+					</div>
+				</div>
+				<div class="col-md">
+					<div class="card shadow-sm rounded-4 p-3 h-100 card-clickable">
+						<div class="fs-3"></div>
+						<input type="hidden" name="search_status" value="C">
+						<div class="fw-semibold mt-2" style="font-size:16px;">결재 완료</div>
+						<div class="fs-4 fw-bold mt-1 text-success" th:text="${statusCnt != null ? statusCnt.C_count : 0}">0</div>
 					</div>
 				</div>
 			</div>
@@ -180,15 +188,15 @@
 			
 			window.addEventListener('DOMContentLoaded', function() {
 			    const params = new URLSearchParams(window.location.search);
-			    const searchStatus = params.get('search_status'); // 현재 선택된 status
+			    const hiddenInput = document.getElementById('search_status_input');
+			    const searchStatus = params.get('search_status') || (hiddenInput ? hiddenInput.value : 'P');
 
 			    if (searchStatus) {
-			        selectedSearchStatus = searchStatus; // 전역변수에도 저장
+			        selectedSearchStatus = searchStatus;
 
-			        // 모든 카드 중에 해당 search_status 가진 카드 찾아서 active
 			        document.querySelectorAll('.card-clickable').forEach(function(card) {
 			            const searchStatusInput = card.querySelector('input[name="search_status"]');
-			            if (searchStatusInput.value === searchStatus) {
+			            if (searchStatusInput && searchStatusInput.value === searchStatus) {
 			                card.classList.add('active-card');
 			            }
 			        });
