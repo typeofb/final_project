@@ -34,10 +34,9 @@ INSERT INTO role (role_no, role_name, role_nickname) VALUES (3, 'ROLE_HR', '인�
 INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (1, '임원', 1);
 INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (2, '영업부', 1);
 INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (3, '품질부', 1);
-INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (4, '개발부', 1);
-INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (5, '기술부', 1);
-INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (6, '해석부', 1);
-INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (7, '연구소', 1);
+INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (4, '기술부', 1);
+INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (5, '해석부', 1);
+INSERT INTO dept (dept_no, dept_name, dept_status) VALUES (6, '연구소', 1);
 
 -- 직급
 INSERT INTO pos (pos_no, pos_name, pos_order) VALUES (1, '대표이사', 1);
@@ -77,31 +76,31 @@ INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no
 VALUES ('khchoi', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '최광훈', 100, '2026-05-28', 2, 4, 6, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('dcjung', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '정대창', 100, '2026-05-28', 2, 5, 8, 15.0);
+VALUES ('dcjung', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '정대창', 100, '2026-05-28', 2, 4, 8, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
 VALUES ('swjang', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '장성원', 100, '2026-05-28', 2, 3, 8, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('yhkwon', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '권용호', 100, '2026-05-28', 2, 7, 9, 15.0);
+VALUES ('yhkwon', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '권용호', 100, '2026-05-28', 2, 6, 9, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('msseo', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '서민석', 100, '2026-05-28', 2, 5, 15, 15.0);
+VALUES ('msseo', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '서민석', 100, '2026-05-28', 2, 4, 15, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('jwpark', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '박진우', 100, '2026-05-28', 2, 5, 15, 15.0);
+VALUES ('jwpark', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '박진우', 100, '2026-05-28', 2, 4, 15, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('gyyang', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '양근영', 100, '2026-05-28', 2, 7, 11, 15.0);
+VALUES ('gyyang', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '양근영', 100, '2026-05-28', 2, 6, 11, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('hhshin', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '신현호', 100, '2026-05-28', 2, 7, 11, 15.0);
+VALUES ('hhshin', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '신현호', 100, '2026-05-28', 2, 6, 11, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('nyan', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '안나영', 100, '2026-05-28', 2, 6, 10, 15.0);
+VALUES ('nyan', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '안나영', 100, '2026-05-28', 2, 5, 10, 15.0);
 
 INSERT INTO member (member_id, member_pw, member_name, status, reg_date, role_no, dept_no, pos_no, annual_leave)
-VALUES ('gmlee', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '이경민', 100, '2026-05-28', 2, 6, 14, 15.0);
+VALUES ('gmlee', '$2a$10$WdH.UkTL7ZTLamfb8n7NIuMNbST3k6YrgG5o5wpe3guE5E6yW6jyu', '이경민', 100, '2026-05-28', 2, 5, 14, 15.0);
 
 -- 1번부터 36번까지의 시스템 전체 기능 리스트 주입
 INSERT INTO func (func_no, func_name, func_code, func_status, parent_func_no, func_order, reg_date) VALUES
@@ -232,7 +231,7 @@ VALUES (3, 5, 'APPROVER', 1),
        (3, 2, 'APPROVER', 3),
        (3, 12, 'REFERENCER', 1);
 
--- [개발부 (dept_no = 4)] 일일업무일지 (1차: 최광훈 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
+-- [기술부 (dept_no = 4)] 일일업무일지 (1차: 최광훈 부장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
 VALUES (4, 1, 4, '일일업무일지', 'Y');
 
@@ -242,31 +241,21 @@ VALUES (4, 6, 'APPROVER', 1),
        (4, 2, 'APPROVER', 3),
        (4, 12, 'REFERENCER', 1);
 
--- [기술부 (dept_no = 5)] 일일업무일지 (1차: 정대창 차장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
+-- [해석부 (dept_no = 5)] 일일업무일지 (1차: 안나영 과장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
 VALUES (5, 1, 5, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
-VALUES (5, 7, 'APPROVER', 1),
+VALUES (5, 14, 'APPROVER', 1),
        (5, 3, 'APPROVER', 2),
        (5, 2, 'APPROVER', 3),
        (5, 12, 'REFERENCER', 1);
 
--- [해석부 (dept_no = 6)] 일일업무일지 (1차: 안나영 과장, 2차: 양인수 전무이사, 3차: 양철수 대표이사, 참조자: 양근영 선임)
+-- [연구소 (dept_no = 6)] 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사, 참조자: 양근영 선임)
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
 VALUES (6, 1, 6, '일일업무일지', 'Y');
 
 INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
-VALUES (6, 14, 'APPROVER', 1),
-       (6, 3, 'APPROVER', 2),
-       (6, 2, 'APPROVER', 3),
+VALUES (6, 3, 'APPROVER', 1),
+       (6, 2, 'APPROVER', 2),
        (6, 12, 'REFERENCER', 1);
-
--- [연구소 (dept_no = 7)] 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사, 참조자: 양근영 선임)
-INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
-VALUES (7, 1, 7, '일일업무일지', 'Y');
-
-INSERT INTO approval_line_detail (line_id, member_no, appr_type, appr_order)
-VALUES (7, 3, 'APPROVER', 1),
-       (7, 2, 'APPROVER', 2),
-       (7, 12, 'REFERENCER', 1);
