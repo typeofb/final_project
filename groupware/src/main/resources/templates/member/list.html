@@ -74,9 +74,18 @@ layout:decorate="~{include/layout :: layout}">
                         		<div class="card-body p-4">
                         			<form name="update_member_form">
                           				<div class="d-flex justify-content-between align-items-center mb-3">
-										  <h4 class="card-title fw-bold mb-0">사원 목록</h4>
+										  <div class="d-flex align-items-center">
+										    <h4 class="card-title fw-bold mb-0 me-3" style="min-width: 100px;">사원 목록</h4>
+											
+										    <div class="input-group">
+											  <input type="text" id="dept_search_text" name="dept_search_text" class="form-control form-control-sm" placeholder="사원명 검색" />
+										      <button type="button" class="btn btn-primary btn-sm" id="deptSearchBtn">검색</button>
+										      <button type="button" class="btn btn-secondary btn-sm" id="deptResetBtn">초기화</button>
+										    </div>
+										  </div>
+										
 										  <button type="button" id="chkUpdateBtn" class="btn btn-primary btn-sm">
-										    일괄 수정
+										    수정
 										  </button>
 										</div>
 										
@@ -153,7 +162,7 @@ layout:decorate="~{include/layout :: layout}">
 										
 										  
 										  <button type="button" id="checkboxUpdateBtn" class="btn btn-primary btn-sm">
-										    일괄 수정
+										    수정
 										  </button>
 										</div>
 										
@@ -441,6 +450,11 @@ layout:decorate="~{include/layout :: layout}">
 										${statusOptions}
 									</select>
 								</td>
+								<td>
+									<button type="button" class="btn btn-sm btn-outline-warning text-nowrap" onclick="resetMemberPassword(${memberDto.member_no}, '${memberDto.member_name}')">
+										<i class="ti ti-key me-1"></i>비밀번호 초기화
+									</button>
+								</td>
 							`;
 							
 							tbody.appendChild(tr);
@@ -487,6 +501,30 @@ layout:decorate="~{include/layout :: layout}">
 			}
 		});
 		
+		function filterDeptMembers() {
+			const val = $('#dept_search_text').val().trim().toLowerCase();
+			$('#member-tbody tr').each(function() {
+				const name = $(this).find('.member-name').text().trim().toLowerCase();
+				if (!val || name.indexOf(val) !== -1) {
+					$(this).removeClass('d-none');
+				} else {
+					$(this).addClass('d-none');
+				}
+			});
+		}
+
+		$(document).on('click', '#deptSearchBtn', function() {
+			filterDeptMembers();
+		});
+
+		$(document).on('input keyup', '#dept_search_text', function(e) {
+			filterDeptMembers();
+		});
+
+		$(document).on('click', '#deptResetBtn', function() {
+			$('#dept_search_text').val('');
+			filterDeptMembers();
+		});
 		
 	</script>
 	
@@ -541,7 +579,7 @@ layout:decorate="~{include/layout :: layout}">
 	</script>
 	
 	<script>
-		// 부서별 조회에서 일괄 수정 버튼을 눌렀을 때 발생하는 로직
+		// 부서별 조회에서 수정 버튼을 눌렀을 때 발생하는 로직
 		document.getElementById('chkUpdateBtn').addEventListener('click', async function () {
 			const checkedRows = document.querySelectorAll('.member-checkbox:checked');
 			if (checkedRows.length === 0) {
@@ -601,7 +639,7 @@ layout:decorate="~{include/layout :: layout}">
 	</script>
 	
 	<script>
-	// 전체 조회에서 일괄 수정 버튼을 눌렀을 때 발생하는 로직
+	// 전체 조회에서 수정 버튼을 눌렀을 때 발생하는 로직
 	document.getElementById('checkboxUpdateBtn').addEventListener('click', async function () {
 		const checkedRows = document.querySelectorAll('.member-checkbox:checked');
 		if (checkedRows.length === 0) {
