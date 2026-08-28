@@ -511,6 +511,24 @@ public class ApprovalController {
 	    
 	    return resultMap;
 	}
+
+	@PostMapping("/approval/delete/{id}")
+	@ResponseBody
+	public Map<String,String> approvalDeleteApi(@PathVariable("id") Long id) {
+		Map<String,String> resultMap = new HashMap<String,String>();
+
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "결재 삭제에 실패하였습니다.");
+
+	    int result = service.deleteApprovalApi(id);
+
+		if(result > 0) {
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "결재가 삭제되었습니다.");
+		}
+
+	    return resultMap;
+	}
 	
 	@GetMapping("/approval/retry/{id}")
 	public String retryApprovalViewApi(@PathVariable("id") Long id, Model model,  @AuthenticationPrincipal UserDetails userDetails) {

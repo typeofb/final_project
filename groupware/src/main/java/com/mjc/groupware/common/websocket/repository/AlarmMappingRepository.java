@@ -10,4 +10,5 @@ import com.mjc.groupware.common.websocket.entity.AlarmMapping;
 public interface AlarmMappingRepository extends JpaRepository<AlarmMapping, Long> {
 	Optional<AlarmMapping> findByAlarm_AlarmNoAndMember_MemberNo(Long alarmNo, Long memberNo);
 	List<AlarmMapping> findByMember_MemberNoAndReadYnOrderByAlarm_RegDateDesc(Long memberNo, String readYn);
+	void deleteAllByAlarm_AlarmNo(Long alarmNo);
 }

@@ -36,6 +36,7 @@ import com.mjc.groupware.approval.entity.ApprAgreementer;
 import com.mjc.groupware.approval.entity.ApprApprover;
 import com.mjc.groupware.approval.entity.ApprReferencer;
 import com.mjc.groupware.approval.entity.Approval;
+import com.mjc.groupware.approval.entity.ApprovalAttach;
 import com.mjc.groupware.approval.entity.ApprovalForm;
 import com.mjc.groupware.approval.mybatis.mapper.ApprovalMapper;
 import com.mjc.groupware.approval.mybatis.vo.ApprovalStatusVo;
@@ -46,6 +47,9 @@ import com.mjc.groupware.approval.repository.ApprReferencerRepository;
 import com.mjc.groupware.approval.repository.ApprovalFormRepository;
 import com.mjc.groupware.approval.repository.ApprovalRepository;
 import com.mjc.groupware.approval.specification.ApprovalSpecification;
+import com.mjc.groupware.common.websocket.entity.Alarm;
+import com.mjc.groupware.common.websocket.repository.AlarmMappingRepository;
+import com.mjc.groupware.common.websocket.repository.AlarmRepository;
 import com.mjc.groupware.member.dto.MemberDto;
 import com.mjc.groupware.member.entity.Member;
 import com.mjc.groupware.member.repository.MemberRepository;
@@ -72,6 +76,8 @@ public class ApprovalService {
 	
 	// 알람
 	private final ApprovalAlarmService approvalAlarmService;
+	private final AlarmRepository alarmRepository;
+	private final AlarmMappingRepository alarmMappingRepository;
 
 	public int createApprovalApi(ApprovalFormDto dto) {
 		int result = 0;
@@ -763,6 +769,68 @@ public class ApprovalService {
 		return result;
 	}
 	
+
+	// 결재 삭제
+	@Transactional(rollbackFor = Exception.class)
+	public int deleteApprovalApi(Long id) {
+		int result = 0;
+		try {
+			Approval approval = approvalRepository.findById(id).orElse(null);
+			if (approval == null) return 0;
+
+			// 1. 결재와 관련된 알림 및 알림 맵핑 삭제 (외래키 제약조건 해제)
+			List<Alarm> alarms = alarmRepository.findAllByApproval_ApprNo(id);
+			if (alarms != null && !alarms.isEmpty()) {
+				for (Alarm alarm : alarms) {
+					alarmMappingRepository.deleteAllByAlarm_AlarmNo(alarm.getAlarmNo());
+				}
+				alarmRepository.deleteAll(alarms);
+			}
+
+			// 2. 첨부파일 삭제
+			List<ApprovalAttach> attaches = approvalAttachService.findByApproval(approval);
+			if (attaches != null) {
+				for (ApprovalAttach attach : attaches) {
+					approvalAttachService.deleteAttachById(attach.getAttachNo());
+				}
+			}
+
+			// 3. 결재자, 합의자, 회람자 삭제
+			List<ApprApprover> approvers = apprApproverRepository.findAllByApproval_ApprNo(id);
+			if (approvers != null && !approvers.isEmpty()) {
+				apprApproverRepository.deleteAll(approvers);
+			}
+
+			List<ApprAgreementer> agreementers = apprAgreementerRepository.findAllByApproval_ApprNo(id);
+			if (agreementers != null && !agreementers.isEmpty()) {
+				apprAgreementerRepository.deleteAll(agreementers);
+			}
+
+			List<ApprReferencer> referencers = apprReferencerRepository.findAllByApproval_ApprNo(id);
+			if (referencers != null && !referencers.isEmpty()) {
+				apprReferencerRepository.deleteAll(referencers);
+			}
+
+			// 4. 자식 결재 문서의 parentApproval 참조 해제
+			List<Approval> childApprovals = approvalRepository.findAllByParentApproval_ApprNo(id);
+			if (childApprovals != null && !childApprovals.isEmpty()) {
+				for (Approval child : childApprovals) {
+					ApprovalDto dto = new ApprovalDto().toDto(child);
+					Approval updatedChild = dto.toEntity(null);
+					approvalRepository.save(updatedChild);
+				}
+			}
+
+			// 5. 결재 문서 삭제
+			approvalRepository.deleteById(id);
+			approvalRepository.flush();
+
+			result = 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	// 결재 중 회수 대기나 회수 승인이 있는 결재
 	public int selectReturnApprovalByApprovalNo(Long id) {
