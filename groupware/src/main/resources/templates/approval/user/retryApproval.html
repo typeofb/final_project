@@ -280,6 +280,17 @@
 		
 	    let editorInstance;
 		
+
+		function cleanScriptTags(html) {
+			if (!html) return '';
+			let cleaned = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+			const idx = cleaned.indexOf('document.addEventListener');
+			if (idx !== -1) cleaned = cleaned.substring(0, idx);
+			const idx2 = cleaned.indexOf('let editorInstance');
+			if (idx2 !== -1) cleaned = cleaned.substring(0, idx2);
+			return cleaned.trim();
+		}
+
 		document.addEventListener("DOMContentLoaded", function () {
 			const {
 				ClassicEditor,
@@ -325,16 +336,6 @@
 				TodoList,
 				Underline
 			} = window.CKEDITOR;
-
-			function cleanScriptTags(html) {
-				if (!html) return '';
-				let cleaned = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-				const idx = cleaned.indexOf('document.addEventListener');
-				if (idx !== -1) cleaned = cleaned.substring(0, idx);
-				const idx2 = cleaned.indexOf('let editorInstance');
-				if (idx2 !== -1) cleaned = cleaned.substring(0, idx2);
-				return cleaned.trim();
-			}
 
 			const LICENSE_KEY = 'GPL';
 
