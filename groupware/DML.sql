@@ -204,6 +204,9 @@ CREATE TABLE IF NOT EXISTS approval_line_detail (
 );
 
 -- 전사 공통 일일업무일지 (1차: 양인수 전무이사, 2차: 양철수 대표이사, 참조자: 양근영 선임)
+INSERT INTO approval_form (approval_form,approval_form_name,approval_form_status,approval_form_type)
+VALUES ('<figure class="table" style="width:100%;"><table class="ck-table-resized"><colgroup><col style="width:8.9%;"><col style="width:78.17%;"><col style="width:12.93%;"></colgroup><tbody><tr><td>구분</td><td>업무내용</td><td>시간</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure>','일일업무일지','Y',0);
+
 INSERT INTO approval_line (line_id, approval_form_no, dept_no, line_name, use_yn)
 VALUES (1, 1, NULL, '일일업무일지', 'Y');
 
