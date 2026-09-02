@@ -196,6 +196,29 @@
 	                            </div>
 	                          </a>
 	                          
+							  <th:block th:if="${#authentication.principal.member.isAbsent == 'Y'}">
+								  <a href="javascript:void(0)" onclick="toggleAbsentStatus()" class="py-8 px-7 d-flex align-items-center bg-warning-subtle rounded-2 mt-2">
+									<span class="d-flex align-items-center justify-content-center text-bg-warning rounded-1 p-6">
+									  <i class="ti ti-user-check fs-6 text-white"></i>
+									</span>
+									<div class="w-100 ps-3">
+									  <h6 class="mb-0 fs-4 lh-base text-warning-emphasis fw-bold">부재중 해제하기</h6>
+									  <span class="fs-3 d-block text-warning-emphasis">현재 부재중 (클릭 시 업무중 복귀)</span>
+									</div>
+								  </a>
+							  </th:block>
+							  <th:block th:if="${#authentication.principal.member.isAbsent != 'Y'}">
+								  <a href="javascript:void(0)" onclick="toggleAbsentStatus()" class="py-8 px-7 d-flex align-items-center">
+									<span class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
+									  <i class="ti ti-user-off fs-6"></i>
+									</span>
+									<div class="w-100 ps-3">
+									  <h6 class="mb-0 fs-4 lh-base">부재 상태 설정</h6>
+									  <span class="fs-3 d-block text-body-secondary">현재 업무중 (클릭 시 부재 설정)</span>
+									</div>
+								  </a>
+							  </th:block>
+
 	                          <!-- 작은화면 : 로그아웃 버튼 -->
 							  <form th:action="@{/logout}" method="post">
 	  						  	<button type="submit" class="logout-button py-8 px-7 d-flex align-items-center bg-transparent border-0 w-100 text-start">
@@ -417,6 +440,29 @@
 	                            </div>
 	                          </a>
 	                          
+							  <th:block th:if="${#authentication.principal.member.isAbsent == 'Y'}">
+								  <a href="javascript:void(0)" onclick="toggleAbsentStatus()" class="py-8 px-7 d-flex align-items-center bg-warning-subtle rounded-2 mt-2">
+									<span class="d-flex align-items-center justify-content-center text-bg-warning rounded-1 p-6">
+									  <i class="ti ti-user-check fs-6 text-white"></i>
+									</span>
+									<div class="w-100 ps-3">
+									  <h6 class="mb-0 fs-4 lh-base text-warning-emphasis fw-bold">부재중 해제하기</h6>
+									  <span class="fs-3 d-block text-warning-emphasis">현재 부재중 (클릭 시 업무중 복귀)</span>
+									</div>
+								  </a>
+							  </th:block>
+							  <th:block th:if="${#authentication.principal.member.isAbsent != 'Y'}">
+								  <a href="javascript:void(0)" onclick="toggleAbsentStatus()" class="py-8 px-7 d-flex align-items-center">
+									<span class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
+									  <i class="ti ti-user-off fs-6"></i>
+									</span>
+									<div class="w-100 ps-3">
+									  <h6 class="mb-0 fs-4 lh-base">부재 상태 설정</h6>
+									  <span class="fs-3 d-block text-body-secondary">현재 업무중 (클릭 시 부재 설정)</span>
+									</div>
+								  </a>
+							  </th:block>
+
 	                          <!-- 풀화면 : 로그아웃 버튼 -->
 	                          
 	                          <form th:action="@{/logout}" method="post">
@@ -451,5 +497,30 @@
       <!--  Header End -->
       
       	
+      <script>
+		function toggleAbsentStatus() {
+			const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').content;
+			const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+			fetch('/member/absent/toggle', {
+				method: 'POST',
+				headers: {
+					[csrfHeaderName]: csrfToken
+				}
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.res_code == '200') {
+						alert(data.res_msg);
+						location.reload();
+					} else {
+						alert(data.res_msg || '부재 상태 변경에 실패했습니다.');
+					}
+				})
+				.catch(err => {
+					console.error(err);
+					alert('오류가 발생했습니다.');
+				});
+		}
+	</script>
 </th:block>
 </html>

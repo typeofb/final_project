@@ -47,6 +47,8 @@ public class MemberDto {
 	private LocalDateTime end_date;
 	private double annual_leave;
 	private String signature;
+	@Builder.Default
+	private String is_absent = "N";
 	
 	public Member toEntity() {
 		return Member.builder()
@@ -68,6 +70,7 @@ public class MemberDto {
 				.status(this.getStatus())
 				.annualLeave(this.getAnnual_leave())
 				.signature(this.getSignature())
+				.isAbsent(this.getIs_absent() != null ? this.getIs_absent() : "N")
 				.build();
 	}
 	
@@ -84,6 +87,7 @@ public class MemberDto {
 				.pos_name(member.getPos() != null ? member.getPos().getPosName() : null) // 04/09 JJI 사원 부서명 불러오기위해 추가
 				.annual_leave(member.getAnnualLeave())
 				.signature(member.getSignature())
+				.is_absent(member.getIsAbsent())
 				.reg_date(member.getRegDate())
 				.build();
 	}

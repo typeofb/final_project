@@ -407,4 +407,15 @@ public class MemberService {
 			throw new RuntimeException("비밀번호 초기화 중 오류가 발생했습니다.");
 		}
 	}
+
+	@Transactional
+	public String toggleAbsentStatus(Long memberNo) {
+		Member member = repository.findById(memberNo).orElse(null);
+		if (member != null) {
+			member.toggleAbsent();
+			Member saved = repository.save(member);
+			return saved.getIsAbsent();
+		}
+		return "N";
+	}
 }

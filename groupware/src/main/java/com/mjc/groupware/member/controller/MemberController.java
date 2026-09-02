@@ -16,8 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -1034,6 +1037,37 @@ public class MemberController {
 			resultMap.put("res_msg", "비밀번호 초기화 처리 중 오류가 발생했습니다.");
 		}
 		
+		return resultMap;
+	}
+
+	// 부재중 상태 토글 API
+	@PostMapping("/member/absent/toggle")
+	@ResponseBody
+	public Map<String, String> toggleAbsentStatusApi(@AuthenticationPrincipal UserDetails userDetails) {
+		Map<String, String> resultMap = new HashMap<>();
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "부재 상태 변경 실패");
+		if (userDetails != null) {
+			String userId = userDetails.getUsername();
+			MemberDto memberDto = new MemberDto();
+			memberDto.setMember_id(userId);
+			Member member = service.selectMemberOne(memberDto);
+			if (member != null) {
+				String newStatus = service.toggleAbsentStatus(member.getMemberNo());
+				// 1. 최신 Member 정보를 DB에서 재조회
+				Member updatedMember = service.selectMemberOne(memberDto);
+				// 2. SecurityContext의 Authentication 객체 갱신
+				MemberDetails updatedUserDetails = new MemberDetails(updatedMember);
+				Authentication newAuth = new UsernamePasswordAuthenticationToken(
+						updatedUserDetails,
+						updatedUserDetails.getPassword(),
+						updatedUserDetails.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(newAuth);
+				resultMap.put("res_code", "200");
+				resultMap.put("is_absent", newStatus);
+				resultMap.put("res_msg", "Y".equals(newStatus) ? "부재중 상태로 설정되었습니다." : "부재중 상태가 해제되었습니다.");
+			}
+		}
 		return resultMap;
 	}
 }

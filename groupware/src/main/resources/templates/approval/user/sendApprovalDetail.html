@@ -186,6 +186,11 @@
 										        <th:block th:if="${approverList[i].approverDecisionStatus == 'R'}">
 										        	<img th:src="@{/img/companion_btn.png}" class="signature-img" alt="서명 이미지">
 										        </th:block>
+										        <th:block th:if="${approverList[i].approverDecisionStatus == 'J'}">
+										        	<div class="d-flex align-items-center justify-content-center h-100" style="min-height: 70px;">
+										        		<span class="badge bg-warning text-dark px-3 py-2 fs-6 fw-bold border border-warning" style="letter-spacing: 1px;">부재 (전결)</span>
+										        	</div>
+										        </th:block>
 										      </th:block>
 										    </td>
 										  </th:block>

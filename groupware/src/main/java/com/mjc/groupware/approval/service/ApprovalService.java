@@ -285,22 +285,15 @@ public class ApprovalService {
 			// 결재자 (합의자 없을 때만)
 			if (!hasAgreementers && hasApprovers) {
 				List<ApprApprover> savedApproverList = apprApproverRepository.findAllByApproval_ApprNo(apprNo);
-			    for (ApprApprover a : savedApproverList) {
-			        if (a.getApproverOrder() == 1 &&
-			            a.getMember() != null &&
-			            a.getMember().getMemberNo() != null) {
-			            targetMemberNoSet.add(a.getMember().getMemberNo());
-			        }
-			    }
+				processAutoSkipAbsentApprovers(saved, savedApproverList);
+			} else {
+				List<Long> targetMemberNos = new ArrayList<>(targetMemberNoSet);
+				approvalAlarmService.sendAlarmToMembers(
+				    targetMemberNos,
+				    saved,
+				    member.getMemberName() + "님이 새로운 결재를 요청하였습니다."
+				);
 			}
-			
-			// List로 변환해서 전송
-			List<Long> targetMemberNos = new ArrayList<>(targetMemberNoSet);
-			approvalAlarmService.sendAlarmToMembers(
-			    targetMemberNos,
-			    saved,
-			    member.getMemberName() + "님이 새로운 결재를 요청하였습니다."
-			);
 
 			result = 1;
 		} catch(Exception e) {
@@ -488,20 +481,7 @@ public class ApprovalService {
 	                    member.getMember_name() + "님이 결재를 최종 승인하였습니다."
 	                );
 	            } else {
-	            	int nextOrder = approvalEntity.getApprOrderStatus(); // 현재는 ++된 상태임
-	                for (ApprApprover a : approverList) {
-	                    if (a.getApproverOrder() == nextOrder) {
-	                        List<Long> targetMemberNos = new ArrayList<>();
-	                        targetMemberNos.add(a.getMember().getMemberNo());
-
-	                        approvalAlarmService.sendAlarmToMembers(
-	                            targetMemberNos,
-	                            approvalEntity,
-	                            approval.getMember().getMemberName() + "님이 새로운 결재를 요청하였습니다."
-	                        );
-	                        break;
-	                    }
-	                }
+	            	processAutoSkipAbsentApprovers(approvalEntity, approverList);
 	            }
 	        }
 
@@ -511,6 +491,100 @@ public class ApprovalService {
 	    }
 
 	    return result;
+	}
+
+	// 부재중 결재자 자동 건너뛰기(전결) 처리 헬퍼 메서드
+	@Transactional(rollbackFor = Exception.class)
+	public void processAutoSkipAbsentApprovers(Approval approval, List<ApprApprover> approverList) {
+		if (approval == null || approverList == null || approverList.isEmpty()) return;
+
+		Approval parentApproval = approval.getParentApproval() != null
+				? approvalRepository.findById(approval.getParentApproval().getApprNo()).orElse(null)
+				: null;
+
+		int currentOrder = approval.getApprOrderStatus();
+		int maxOrder = approverList.stream().mapToInt(ApprApprover::getApproverOrder).max().orElse(0);
+
+		boolean changed = false;
+
+		while (currentOrder <= maxOrder) {
+			int targetOrder = currentOrder;
+			ApprApprover targetApprover = approverList.stream()
+					.filter(a -> a.getApproverOrder() == targetOrder)
+					.findFirst().orElse(null);
+
+			if (targetApprover != null && targetApprover.getMember() != null) {
+				Member approverMember = memberRepository.findById(targetApprover.getMember().getMemberNo()).orElse(null);
+				if (approverMember != null && "Y".equals(approverMember.getIsAbsent()) 
+						&& !"C".equals(targetApprover.getApproverDecisionStatus()) 
+						&& !"R".equals(targetApprover.getApproverDecisionStatus())
+						&& !"J".equals(targetApprover.getApproverDecisionStatus())) {
+
+					ApprApproverDto aDto = new ApprApproverDto().toDto(targetApprover);
+					aDto.setApprover_decision_status("J");
+					aDto.setApprover_decision_status_time(LocalDateTime.now());
+					apprApproverRepository.save(aDto.toEntity());
+
+					currentOrder++;
+					changed = true;
+					continue;
+				}
+			}
+			break;
+		}
+
+		if (changed) {
+			ApprovalDto approvalDto = new ApprovalDto().toDto(approval);
+			approvalDto.setAppr_order_status(currentOrder);
+
+			if (currentOrder > maxOrder) {
+				approvalDto.setAppr_status("C");
+				approvalDto.setAppr_res_date(LocalDateTime.now());
+
+				Approval saved = approvalRepository.save(approvalDto.toEntity(parentApproval));
+
+				Long requesterNo = saved.getMember().getMemberNo();
+				List<Long> targetMemberNos = new ArrayList<>();
+				targetMemberNos.add(requesterNo);
+
+				approvalAlarmService.sendAlarmToMembers(
+					targetMemberNos,
+					saved,
+					"부재중 결재자 자동 건너뛰기로 결재가 최종 승인되었습니다."
+				);
+			} else {
+				Approval savedEntity = approvalRepository.save(approvalDto.toEntity(parentApproval));
+				int activeOrder = currentOrder;
+				for (ApprApprover a : approverList) {
+					if (a.getApproverOrder() == activeOrder && a.getMember() != null) {
+						List<Long> targetMemberNos = new ArrayList<>();
+						targetMemberNos.add(a.getMember().getMemberNo());
+
+						approvalAlarmService.sendAlarmToMembers(
+							targetMemberNos,
+							savedEntity,
+							savedEntity.getMember().getMemberName() + "님이 새로운 결재를 요청하였습니다. (이전 결재자 부재로 자동 건너뜀)"
+						);
+						break;
+					}
+				}
+			}
+		} else {
+			int activeOrder = currentOrder;
+			for (ApprApprover a : approverList) {
+				if (a.getApproverOrder() == activeOrder && a.getMember() != null) {
+					List<Long> targetMemberNos = new ArrayList<>();
+					targetMemberNos.add(a.getMember().getMemberNo());
+
+					approvalAlarmService.sendAlarmToMembers(
+						targetMemberNos,
+						approval,
+						approval.getMember().getMemberName() + "님이 새로운 결재를 요청하였습니다."
+					);
+					break;
+				}
+			}
+		}
 	}
 
 	

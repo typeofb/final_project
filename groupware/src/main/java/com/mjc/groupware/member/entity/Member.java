@@ -75,6 +75,10 @@ public class Member {
     
     @Column(name = "signature", columnDefinition = "LONGTEXT")
     private String signature;
+    
+    @Builder.Default
+    @Column(name = "is_absent")
+    private String isAbsent = "N";
 	
 	@Column(name="reg_date")
 	private LocalDate regDate;
@@ -145,4 +149,7 @@ public class Member {
 		this.signature = signature;
 	}
 	
+	public void toggleAbsent() {
+		this.isAbsent = "Y".equals(this.isAbsent) ? "N" : "Y";
+	}
 }
