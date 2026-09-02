@@ -25,5 +25,6 @@ public class ApprovalVo {
 	private String relationship;
 	private String member_name;
 	private String approval_form_name;
+	private String approver_decision_status;
 	
 }

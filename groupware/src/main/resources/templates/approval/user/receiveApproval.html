@@ -304,7 +304,14 @@
 								<input type="hidden" id="relationship" th:value="${approvalVo.relationship}">
 							</th:block>
 							<th:block th:if="${approvalVo.relationship == 'R'}">
-								<td><span class="mb-1 badge text-bg-light">참조 / 회람</span></td>
+								<td>
+									<span class="mb-1 badge text-bg-light">
+										참조 / 회람
+										<i th:if="${approvalVo.approver_decision_status == 'Y'}"
+										   class="ti ti-check text-success font-weight-bold ms-1"
+										   style="color: #198754; font-weight: bold;" title="회람 확인 완료"></i>
+									</span>
+								</td>
 								<input type="hidden" id="relationship" th:value="${approvalVo.relationship}">
 							</th:block>
 							<td

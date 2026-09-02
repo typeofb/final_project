@@ -7,7 +7,7 @@
 	resultType="com.mjc.groupware.approval.mybatis.vo.ApprovalVo">
 	SELECT AA.appr_no, AA.appr_title, AA.appr_reg_date, AA.appr_status,
 		       AA.appr_order_status, AA.relationship, AA.member_name,
-		       AA.approval_form_name
+		       AA.approval_form_name, AA.approver_decision_status
 		FROM (
 			SELECT W.appr_no ,W.appr_title ,W.appr_reg_date ,W.appr_status
 			,W.appr_order_status ,W.relationship ,M.member_name
@@ -38,7 +38,7 @@
 					,a.appr_title ,a.appr_status ,a.appr_order_status
 					,a.appr_sender ,a.approval_type_no
 					,'R' AS relationship
-					,1 AS approver_order, 'R' AS approver_decision_status
+					,1 AS approver_order, r.referencer_status AS approver_decision_status
 			FROM `approval` a
 			JOIN (SELECT * FROM `appr_referencer` WHERE referencer_no = #{member_no}) r ON a.appr_no = r.appr_no
 				) W
