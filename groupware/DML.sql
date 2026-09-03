@@ -160,8 +160,11 @@ INSERT INTO func_mapping (func_no, role_no) VALUES
 -- 인사 담당자 권한 (ROLE_HR, role_no: 3) 에게 기능 매핑
 INSERT INTO func_mapping (func_no, role_no) VALUES
 (12, 3), -- 사원등록
-(15, 3), -- 인사 관리
+(13, 3), -- 부서관리
+(14, 3), -- 직급관리
+(15, 3), -- 인사관리
 (17, 3), -- 전자결재
+(18, 3), -- 근태관리
 (20, 3), -- 일정 조회
 (21, 3), -- 채팅방 진입
 (24, 3), -- 공지사항 조회
