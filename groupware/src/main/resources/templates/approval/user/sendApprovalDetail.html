@@ -104,10 +104,10 @@
 				
 				<div class="d-flex justify-content-between align-items-center mb-3" style="min-width: 180px;">
 					<div>
-						<th:block th:if="${(approval.apprStatus == 'D' or approval.apprStatus == 'A' or approval.apprStatus == 'C') and return_result == 0}">
+						<th:block th:if="${isDeletable}">
 							<button type="button" class="btn btn-sm btn-danger" onclick="deleteApproval()">결재 삭제</button>
 						</th:block>
-						<th:block th:unless="${(approval.apprStatus == 'D' or approval.apprStatus == 'A' or approval.apprStatus == 'C') and return_result == 0}">
+						<th:block th:unless="${isDeletable}">
 							<!-- 버튼 자리에 빈 공간 유지 -->
 							<span style="display: inline-block; width: 88px;"></span>
 							<!-- 버튼의 실제 너비만큼 (btn-sm 기준 약 88px) -->

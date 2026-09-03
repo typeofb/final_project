@@ -844,6 +844,27 @@ public class ApprovalService {
 	}
 	
 
+	// 결재 삭제 가능 여부 확인
+	public boolean isApprovalDeletable(Approval approval, List<ApprApprover> approverList, int returnResult) {
+		if (approval == null) return false;
+		if (!"D".equals(approval.getApprStatus())) return false;
+		if (approval.getApprOrderStatus() > 1) return false;
+
+		if (approverList != null && !approverList.isEmpty()) {
+			for (ApprApprover approver : approverList) {
+				if (!"W".equals(approver.getApproverDecisionStatus())) {
+					return false;
+				}
+			}
+		}
+
+		if (returnResult != 0) {
+			return false;
+		}
+
+		return true;
+	}
+
 	// 결재 삭제
 	@Transactional(rollbackFor = Exception.class)
 	public int deleteApprovalApi(Long id) {
@@ -851,6 +872,31 @@ public class ApprovalService {
 		try {
 			Approval approval = approvalRepository.findById(id).orElse(null);
 			if (approval == null) return 0;
+
+			// 1. 결재 대기 중('D') 상태인지 확인
+			if (!"D".equals(approval.getApprStatus())) {
+				return -1;
+			}
+
+			// 2. 1차 결재 발생 여부 확인 (결재 순서가 1을 초과했거나 결재자 의사결정 상태가 대기('W')가 아닌 경우)
+			if (approval.getApprOrderStatus() > 1) {
+				return -2;
+			}
+
+			List<ApprApprover> approvers = apprApproverRepository.findAllByApproval_ApprNo(id);
+			if (approvers != null && !approvers.isEmpty()) {
+				for (ApprApprover approver : approvers) {
+					if (!"W".equals(approver.getApproverDecisionStatus())) {
+						return -2;
+					}
+				}
+			}
+
+			// 3. 결재 회수 관련 확인
+			int returnResult = selectReturnApprovalByApprovalNo(id);
+			if (returnResult != 0) {
+				return -3;
+			}
 
 			// 1. 결재와 관련된 알림 및 알림 맵핑 삭제 (외래키 제약조건 해제)
 			List<Alarm> alarms = alarmRepository.findAllByApproval_ApprNo(id);
@@ -870,7 +916,6 @@ public class ApprovalService {
 			}
 
 			// 3. 결재자, 합의자, 회람자 삭제
-			List<ApprApprover> approvers = apprApproverRepository.findAllByApproval_ApprNo(id);
 			if (approvers != null && !approvers.isEmpty()) {
 				apprApproverRepository.deleteAll(approvers);
 			}

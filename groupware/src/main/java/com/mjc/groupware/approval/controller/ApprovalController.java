@@ -228,6 +228,8 @@ public class ApprovalController {
 	    int return_result = service.selectReturnApprovalByApprovalNo(id);
 	    
 	    List<ApprovalAttach> attachList= approvalAttachService.findByApproval(approval);
+
+		boolean isDeletable = service.isApprovalDeletable(approval, approverList, return_result);
 	    
 	    model.addAttribute("approval", approval);
 	    model.addAttribute("approverList", approverList);
@@ -235,6 +237,7 @@ public class ApprovalController {
 	    model.addAttribute("referencerList", referencerList);
 	    model.addAttribute("attachList", attachList);
 	    model.addAttribute("return_result", return_result);
+		model.addAttribute("isDeletable", isDeletable);
 		
 		return "approval/user/sendApprovalDetail";
 	}
@@ -522,9 +525,18 @@ public class ApprovalController {
 
 	    int result = service.deleteApprovalApi(id);
 
-		if(result > 0) {
+		if(result == 1) {
 			resultMap.put("res_code", "200");
 			resultMap.put("res_msg", "결재가 삭제되었습니다.");
+		} else if(result == -1) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "결재 대기 중인 문서만 삭제할 수 있습니다.");
+		} else if(result == -2) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "1차 결재가 이미 진행된 문서는 삭제할 수 없습니다.");
+		} else if(result == -3) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "결재 회수 처리 중인 문서는 삭제할 수 없습니다.");
 		}
 
 	    return resultMap;
