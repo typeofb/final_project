@@ -1203,6 +1203,21 @@ public class ApprovalService {
 			currentDept = currentDept.getParentDept();
 		}
 
+		// 임원 부서(양인수 전무이사, 양철수 대표이사) 최종 결재자 자동 추가
+		List<Member> executives = memberRepository.findExecutivesSortedByPosOrderDesc();
+		if (executives != null) {
+			for (Member exec : executives) {
+				if (!addedMemberNos.contains(exec.getMemberNo())) {
+					if (drafter.getPos() == null || exec.getPos() == null ||
+						(exec.getPos().getPosOrder() != null && drafter.getPos().getPosOrder() != null &&
+						 exec.getPos().getPosOrder() < drafter.getPos().getPosOrder())) {
+						addedMemberNos.add(exec.getMemberNo());
+						autoLine.add(new MemberDto().toDto(exec));
+					}
+				}
+			}
+		}
+
 		return autoLine;
 	}
 

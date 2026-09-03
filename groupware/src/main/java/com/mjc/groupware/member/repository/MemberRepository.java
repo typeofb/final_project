@@ -27,6 +27,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
 	@Query("SELECT m FROM Member m JOIN m.pos p WHERE m.dept.deptNo = :deptNo ORDER BY p.posOrder ASC")
     List<Member> findAllByDeptNoSortedByPosOrder(@Param("deptNo") Long deptNo);
 
+	@Query("SELECT m FROM Member m JOIN m.pos p WHERE (m.dept.deptName = '임원' OR m.dept.deptNo = 1) AND m.status != 3 ORDER BY p.posOrder DESC")
+	List<Member> findExecutivesSortedByPosOrderDesc();
+
 	List<Member> findByDept(Dept dept);
 	
 	List<Member> findByRole_RoleNo(Long roleNo);
