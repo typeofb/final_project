@@ -293,43 +293,23 @@
 		              
 		              <th:block th:each="funcNo : ${accessibleFuncNoList}">
 		              	<th:block th:if="${funcNo == 18}">
-		              		<li class="sidebar-item">
-					          	<a class="sidebar-link inner-sidebar-item" href="javascript:void(0)" aria-expanded="false">
-					            	<span class="rounded-3">
-					                	<i class="ti ti-layout"></i>
-					                </span>
-					                <span class="hide-menu">관리 : 근태</span>
-					           	</a>
-					           	<ul aria-expanded="false" class="collapse second-level">
-					            	<li class="sidebar-item">
-					                    <a th:href="@{/attendance/management}" class="sidebar-link inner-sidebar-item">
-					                      <i class="ti ti-clock"></i>
-					                      <span class="hide-menu">근태관리</span>
-					                    </a>
-				                  	</li>
-			    				</ul>
-					         </li>
+					    	<li class="sidebar-item">
+			                    <a th:href="@{/attendance/management}" class="sidebar-link inner-sidebar-item">
+			                      <i class="ti ti-clock"></i>
+			                      <span class="hide-menu">근태관리</span>
+			                    </a>
+		                  	</li>
 		              	</th:block>
 		              </th:block>
 		              
 		              <th:block th:each="funcNo : ${accessibleFuncNoList}">
 		              	<th:block th:if="${funcNo == 33}">
-		              		<li class="sidebar-item">
-					          	<a class="sidebar-link inner-sidebar-item" href="javascript:void(0)" aria-expanded="false">
-					            	<span class="rounded-3">
-					                	<i class="ti ti-layout"></i>
-					                </span>
-					                <span class="hide-menu">관리 : 연차</span>
-					           	</a>
-								<ul aria-expanded="false" class="collapse second-level">
-					            	<li class="sidebar-item">
-					                    <a th:href="@{/annual/management}" class="sidebar-link inner-sidebar-item">
-					                      <i class="fas fa-plane"></i>
-					                      <span class="hide-menu">연차관리</span>
-					                    </a>
-				                  	</li>
-			    				</ul>
-					         </li>
+					    	<li class="sidebar-item">
+			                    <a th:href="@{/annual/management}" class="sidebar-link inner-sidebar-item">
+			                      <i class="fas fa-plane"></i>
+			                      <span class="hide-menu">연차관리</span>
+			                    </a>
+		                  	</li>
 		              	</th:block>
 		              </th:block>
 		              
