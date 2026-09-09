@@ -865,6 +865,11 @@ public class ApprovalService {
 		return true;
 	}
 
+	// 결재 수정 가능 여부 확인
+	public boolean isApprovalEditable(Approval approval, List<ApprApprover> approverList, int returnResult) {
+		return isApprovalDeletable(approval, approverList, returnResult);
+	}
+
 	// 결재 삭제
 	@Transactional(rollbackFor = Exception.class)
 	public int deleteApprovalApi(Long id) {
@@ -987,6 +992,30 @@ public class ApprovalService {
 		try {
 			// 이전 결재 entity
 			Approval entity = approvalRepository.findById(approvalDto.getAppr_no()).orElse(null);
+			if (entity == null) return 0;
+
+			boolean isEditMode = "D".equals(entity.getApprStatus());
+			// 결재 대기 중('D') 수정 시 1차 결재 및 회수 진행 여부 검증
+			if (isEditMode) {
+				if (entity.getApprOrderStatus() > 1) {
+					return -2;
+				}
+				List<ApprApprover> currentApprovers = apprApproverRepository.findAllByApproval_ApprNo(entity.getApprNo());
+				if (currentApprovers != null && !currentApprovers.isEmpty()) {
+					for (ApprApprover approver : currentApprovers) {
+						if (!"W".equals(approver.getApproverDecisionStatus())) {
+							return -2;
+						}
+					}
+				}
+				int returnResult = selectReturnApprovalByApprovalNo(entity.getApprNo());
+				if (returnResult != 0) {
+					return -3;
+				}
+			} else if (!"R".equals(entity.getApprStatus())) {
+				return -1;
+			}
+
 			// 합의자 여부 확인
 			List<ApprAgreementer> agreementers = apprAgreementerRepository.findAllByApproval_ApprNo(entity.getApprNo());
 			
@@ -1091,7 +1120,7 @@ public class ApprovalService {
 			    saved.getMember().getMemberName() + "님이 새로운 결재를 요청하였습니다."
 			);
 			
-			result = 1;
+			result = isEditMode ? 2 : 1;
 			
 		} catch(Exception e) {
 			e.printStackTrace();

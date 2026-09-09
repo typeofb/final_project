@@ -230,6 +230,7 @@ public class ApprovalController {
 	    List<ApprovalAttach> attachList= approvalAttachService.findByApproval(approval);
 
 		boolean isDeletable = service.isApprovalDeletable(approval, approverList, return_result);
+		boolean isEditable = service.isApprovalEditable(approval, approverList, return_result);
 	    
 	    model.addAttribute("approval", approval);
 	    model.addAttribute("approverList", approverList);
@@ -238,6 +239,7 @@ public class ApprovalController {
 	    model.addAttribute("attachList", attachList);
 	    model.addAttribute("return_result", return_result);
 		model.addAttribute("isDeletable", isDeletable);
+		model.addAttribute("isEditable", isEditable);
 		
 		return "approval/user/sendApprovalDetail";
 	}
@@ -556,7 +558,14 @@ public class ApprovalController {
 
 	    // 기존 결재 데이터 가져오기
 	    Approval approval = service.selectApprovalOneByApprovalNo(id);
+	    if (approval == null) {
+	        return "redirect:/approval";
+	    }
 	    List<ApprApprover> approverList = service.selectApprApproverAllByApprovalNo(id);
+	    int return_result = service.selectReturnApprovalByApprovalNo(id);
+	    if (!"R".equals(approval.getApprStatus()) && !service.isApprovalEditable(approval, approverList, return_result)) {
+	        return "redirect:/approval/send/detail/" + id;
+	    }
 	    List<ApprAgreementer> agreementerList = service.selectApprAgreementerAllByApprovalNo(id);
 	    List<ApprReferencer> referencerList = service.selectApprReferencerAllByApprovalNo(id);
 	    List<ApprovalAttach> attachList= approvalAttachService.findByApproval(approval);
@@ -584,9 +593,21 @@ public class ApprovalController {
 		
 	    int result = service.retryApprovalApi(approvalDto, files, deleteFiles);
 	    
-		if(result > 0) {
+		if(result == 2) {
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "결재가 수정되었습니다.");
+		} else if(result == 1) {
 			resultMap.put("res_code", "200");
 			resultMap.put("res_msg", "결재 재요청에 성공하였습니다.");
+		} else if(result == -1) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "결재 대기 중인 문서만 수정할 수 있습니다.");
+		} else if(result == -2) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "1차 결재가 이미 진행된 문서는 수정할 수 없습니다.");
+		} else if(result == -3) {
+			resultMap.put("res_code", "400");
+			resultMap.put("res_msg", "결재 회수 처리 중인 문서는 수정할 수 없습니다.");
 		}
 	    
 	    return resultMap;

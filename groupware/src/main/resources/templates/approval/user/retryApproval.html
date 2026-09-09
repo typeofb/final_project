@@ -15,7 +15,7 @@
 	<!-- <link th:href="@{/css/jji.css}" rel="stylesheet"> -->
 	<div class="container mt-5">
 		<div class="card p-4 shadow-sm">
-			<h3 class="fw-bold mb-4 text-center">재기안 작성</h3>
+			<h3 class="fw-bold mb-4 text-center" th:text="${approval.apprStatus == 'D' ? '결재 문서 수정' : '재기안 작성'}">재기안 작성</h3>
 
 			<div class="col-12" style="max-width: 1000px; margin: 0 auto;">
 				<form name="retry_approval_form" action="/approval/retry"
@@ -141,7 +141,7 @@
 					<div class="d-flex justify-content-end mt-3">
 					    <button type="button" th:onclick="|sendApprovalDetail('${approval.apprNo}')|"
 					            class="btn btn-secondary me-2">돌아가기</button>
-					    <button type="submit" class="btn btn-primary">승인요청</button>
+					    <button type="submit" class="btn btn-primary" th:text="${approval.apprStatus == 'D' ? '수정 완료' : '승인요청'}">승인요청</button>
 					</div>
 					
 				</form>
@@ -270,7 +270,8 @@
 		
 	
 		async function sendApprovalDetail(apprNo) {
-			const isConfirmed = await confirm('재기안을 중지하고 상세페이지로 돌아가시겠습니까?');
+			const isEditMode = [[${approval.apprStatus == 'D'}]];
+			const isConfirmed = await confirm(isEditMode ? '수정을 취소하고 상세페이지로 돌아가시겠습니까?' : '재기안을 중지하고 상세페이지로 돌아가시겠습니까?');
 			if(isConfirmed) {
 				location.href = '/approval/send/detail/'+apprNo;
 			}
@@ -520,7 +521,8 @@
 		retryApprovalForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			
-			const isConfirmed = await confirm('결재를 재기안 하시겠습니까?');
+			const isEditMode = [[${approval.apprStatus == 'D'}]];
+			const isConfirmed = await confirm(isEditMode ? '결재 문서를 수정하시겠습니까?' : '결재를 재기안 하시겠습니까?');
 			if(!isConfirmed) return;
 		
 			let valid = false;

@@ -107,7 +107,10 @@
 						<th:block th:if="${isDeletable}">
 							<button type="button" class="btn btn-sm btn-danger" onclick="deleteApproval()">결재 삭제</button>
 						</th:block>
-						<th:block th:unless="${isDeletable}">
+						<th:block th:if="${isEditable}">
+							<a th:href="@{/approval/retry/{id}(id=${approval.apprNo})}" class="btn btn-sm btn-primary ms-1">결재 수정</a>
+						</th:block>
+						<th:block th:unless="${isDeletable or isEditable}">
 							<!-- 버튼 자리에 빈 공간 유지 -->
 							<span style="display: inline-block; width: 88px;"></span>
 							<!-- 버튼의 실제 너비만큼 (btn-sm 기준 약 88px) -->
