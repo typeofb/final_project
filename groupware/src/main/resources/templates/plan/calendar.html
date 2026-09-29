@@ -244,6 +244,8 @@ layout:decorate="~{include/layout :: layout}">
           	    vali_text += "제목을 입력하세요.";
           	  } else if (!planContent) {
           	    vali_text += "내용을 입력하세요.";
+          	  } else if (!planType) {
+          	    vali_text += "일정 타입을 선택하세요.";
           	  } else {
           	    vali_check = true;
           	  }
